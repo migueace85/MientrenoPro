@@ -1,0 +1,3841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MiEntrenoPro</title>
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MiEntrenoPro">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2314161a'/%3E%3Ctext x='50' y='62' font-size='46' text-anchor='middle' fill='%23ff6a3d' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2314161a'/%3E%3Ctext x='50' y='62' font-size='46' text-anchor='middle' fill='%23ff6a3d' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="manifest" id="pwaManifestLink">
+<style>
+:root{
+  --bg:#14161a;
+  --panel:#1d2027;
+  --panel2:#242833;
+  --line:#2e3340;
+  --text:#e9eaec;
+  --muted:#8b93a3;
+  --accent:#ff6a3d;
+  --accent2:#3ddc97;
+  --danger:#ff5470;
+}
+*{box-sizing:border-box;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  padding-bottom:90px;
+}
+.brand{
+  font-family:'Segoe UI',sans-serif;
+  font-weight:800;
+  letter-spacing:-0.03em;
+  font-size:1.5rem;
+}
+.brand span{color:var(--accent);}
+.topbar{
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  padding:14px 16px;
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.tabbar{
+  display:flex;gap:8px;padding:10px 16px 0 16px;max-width:720px;margin:0 auto;
+}
+.tab-btn{
+  flex:1;background:var(--panel);border:1px solid var(--line);color:var(--muted);
+  padding:10px 8px;border-radius:10px 10px 0 0;font-size:.9rem;font-weight:600;
+  border-bottom:none;position:relative;
+}
+.tab-btn.active{background:var(--panel2);color:var(--text);border-color:var(--accent);}
+.tab-badge{
+  background:var(--accent);color:#fff;border-radius:20px;font-size:.7rem;
+  padding:1px 7px;margin-left:4px;
+}
+.star-btn{font-size:1.1rem;}
+.cat-tag{
+  font-size:.7rem;color:var(--muted);background:var(--panel);border-radius:6px;
+  padding:1px 8px;margin-left:6px;
+}
+.day-picker-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:10px;
+}
+.day-picker-row select{
+  flex:1;padding:6px 8px;font-size:.85rem;
+}
+.container-app{max-width:720px;margin:0 auto;padding:16px;}
+.cat-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  margin-bottom:14px;
+  overflow:hidden;
+  position:relative;
+}
+.cat-card.dragging{
+  z-index:50;
+  box-shadow:0 12px 28px rgba(0,0,0,.5);
+  opacity:.95;
+}
+.drag-handle{
+  cursor:grab;touch-action:none;color:var(--muted);font-size:1.2rem;
+  padding:4px 6px;line-height:1;flex-shrink:0;
+}
+.drag-handle:active{cursor:grabbing;color:var(--text);}
+.cat-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  cursor:pointer;
+  user-select:none;
+}
+.cat-title{font-weight:700;font-size:1.05rem;display:flex;align-items:center;gap:10px;}
+.cat-count{
+  font-size:.75rem;
+  color:var(--muted);
+  background:var(--panel2);
+  border-radius:20px;
+  padding:2px 10px;
+}
+.cat-actions button{
+  background:none;border:none;color:var(--muted);font-size:1.1rem;padding:4px 8px;
+}
+.cat-body{border-top:1px solid var(--line);padding:8px;display:none;}
+.cat-body.open{display:block;}
+.ex-item{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:10px;
+  margin:8px 0;
+  overflow:hidden;
+  position:relative;
+}
+.ex-item.dragging{
+  z-index:50;
+  box-shadow:0 12px 28px rgba(0,0,0,.5);
+  opacity:.95;
+}
+@keyframes revealFlash{
+  0%, 100% { background:var(--panel2); }
+  20%, 60% { background:rgba(255,224,138,.22); }
+}
+.ex-item.reveal-highlight{
+  animation: revealFlash 1.6s ease-out;
+}
+.ex-item.reveal-highlight .ex-name{
+  animation: revealFlashText 1.6s ease-out;
+}
+@keyframes revealFlashText{
+  0%, 100% { color: var(--text); }
+  20%, 60% { color: #ffe08a; }
+}
+.ex-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;cursor:pointer;user-select:none;
+}
+.ex-quicklog{
+  display:flex;align-items:center;gap:6px;
+  justify-content:flex-start;margin:10px 0;
+}
+.stepper{display:flex;flex-direction:column;align-items:center;width:44px;}
+.stepper .stepper-label{font-size:.62rem;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.03em;}
+.stepper button{
+  background:var(--panel);border:1px solid var(--line);color:var(--text);
+  width:100%;line-height:1;padding:3px 0;font-size:.7rem;border-radius:5px;
+}
+.stepper button:active{background:var(--accent);color:#fff;}
+.stepper .stepper-value{
+  background:var(--bg);border:1px solid var(--line);
+  text-align:center;padding:3px 0;font-weight:700;font-size:.85rem;
+  width:100%;margin:2px 0;border-radius:5px;
+}
+.quicklog-confirm{
+  background:var(--accent);border:none;color:#fff;border-radius:8px;
+  width:38px;height:38px;font-size:1rem;flex-shrink:0;align-self:center;margin-left:6px;
+}
+.ex-thumb{
+  width:44px;height:44px;border-radius:8px;object-fit:cover;
+  background:#2a2f3b;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;color:var(--muted);
+}
+.ex-name{font-weight:600;flex:1;}
+.ex-last{font-size:.75rem;color:var(--muted);margin-bottom:8px;}
+.ex-body{display:none;border-top:1px solid var(--line);padding:12px;}
+.ex-body.open{display:block;}
+.ex-photo-wrap{text-align:center;margin-bottom:12px;}
+.ex-chart-wrap{
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  padding:8px 10px;margin-bottom:12px;
+}
+.hist-weeks-scroll{
+  display:flex;align-items:flex-end;gap:5px;overflow-x:auto;
+  height:110px;padding:4px 4px 0 4px;-webkit-overflow-scrolling:touch;
+}
+.hist-week-col{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:12px;}
+.hist-week-bar{width:10px;border-radius:3px 3px 0 0;min-height:3px;background:#2e3340;}
+.hist-week-bar.is-current{background:var(--accent);}
+.color-swatch-row{display:flex;gap:10px;flex-wrap:wrap;}
+.color-swatch{
+  width:30px;height:30px;border-radius:50%;border:2px solid transparent;
+  cursor:pointer;padding:0;flex-shrink:0;
+}
+.color-swatch.active{border-color:#fff;}
+.color-swatch.auto{
+  background:var(--panel);border:2px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;color:var(--muted);font-weight:700;
+}
+.color-swatch.auto.active{border-color:#fff;border-style:solid;}
+@keyframes restTimerPulse{
+  0%, 100%{ background:var(--panel); }
+  50%{ background:var(--accent); }
+}
+#restTimerBar.rest-timer-done{ animation: restTimerPulse 1s infinite; }
+.ex-photo-wrap img{max-width:100%;max-height:220px;border-radius:10px;object-fit:contain;background:#000;}
+.gallery-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;-webkit-overflow-scrolling:touch;}
+.gallery-thumb-wrap{position:relative;flex-shrink:0;}
+.gallery-thumb-wrap img{
+  width:110px;height:110px;object-fit:cover;border-radius:10px;
+  cursor:zoom-in;background:#000;display:block;
+}
+.gallery-del{
+  position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;
+  border:none;border-radius:50%;width:22px;height:22px;font-size:.75rem;line-height:1;
+}
+.gallery-add{
+  width:110px;height:110px;flex-shrink:0;border:2px dashed var(--line);
+  border-radius:10px;background:none;color:var(--muted);font-size:1.6rem;
+}
+.upload-btn{
+  font-size:.8rem;color:var(--accent);background:none;border:1px dashed var(--accent);
+  border-radius:8px;padding:6px 10px;
+}
+.session-form{display:flex;gap:6px;margin-bottom:10px;}
+.session-form input{
+  background:var(--bg);border:1px solid var(--line);color:var(--text);
+  border-radius:8px;padding:8px 4px;font-size:.9rem;text-align:center;
+  flex:1 1 0;width:0;min-width:0;
+}
+.session-form button{flex-shrink:0;}
+.hist-table{width:100%;font-size:.85rem;border-collapse:collapse;}
+.hist-table th{color:var(--muted);font-weight:600;text-align:left;padding:4px 6px;border-bottom:1px solid var(--line);}
+.hist-table td{padding:6px;border-bottom:1px solid var(--line);}
+.hist-table tr:last-child td{border-bottom:none;}
+.pr-badge{color:var(--accent2);font-weight:700;}
+.delta-up{color:var(--accent2);}
+.delta-down{color:var(--danger);}
+.fab{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--accent);color:#fff;border:none;
+  width:58px;height:58px;border-radius:50%;font-size:1.6rem;
+  box-shadow:0 6px 20px rgba(255,106,61,.4);
+  display:flex;align-items:center;justify-content:center;z-index:20;
+}
+.empty-state{text-align:center;color:var(--muted);padding:60px 20px;}
+.modal-content{background:var(--panel);color:var(--text);border:1px solid var(--line);}
+.form-control,.form-select{background:var(--bg);color:var(--text);border-color:var(--line);}
+.form-control:focus,.form-select:focus{background:var(--bg);color:var(--text);border-color:var(--accent);box-shadow:none;}
+.btn-accent{background:var(--accent);border:none;color:#fff;}
+.btn-accent:hover{background:#e85a2e;color:#fff;}
+.btn-ghost{background:none;border:1px solid var(--line);color:var(--text);}
+.small-muted{font-size:.75rem;color:var(--muted);}
+.drag-handle{cursor:grab;color:var(--muted);padding:0 6px;}
+.icon-btn{background:none;border:none;color:var(--muted);font-size:1rem;padding:2px 6px;}
+.icon-btn:hover{color:var(--text);}
+.icon-btn.danger:hover{color:var(--danger);}
+.toast-msg{
+  position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+  background:var(--panel2);border:1px solid var(--line);color:var(--text);
+  padding:10px 18px;border-radius:20px;font-size:.85rem;z-index:2000;
+  opacity:0;transition:opacity .25s;
+}
+.cat-type-picker{display:flex;flex-direction:column;gap:8px;}
+.cat-type-btn{
+  background:var(--bg);border:1px solid var(--line);color:var(--text);
+  border-radius:10px;padding:10px 12px;text-align:left;font-weight:600;font-size:.9rem;
+}
+.cat-type-btn.active{border-color:var(--accent);background:var(--panel2);}
+.photo-item{display:flex;align-items:center;gap:10px;}
+.photo-item-thumb{
+  width:56px;height:56px;border-radius:8px;object-fit:cover;background:#2a2f3b;flex-shrink:0;cursor:zoom-in;
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--muted);
+}
+.ex-photo-wrap img{cursor:zoom-in;}
+.photo-lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;
+  z-index:350;padding:20px;overflow:hidden;
+}
+.photo-lightbox.open{display:flex;}
+.photo-lightbox img{
+  max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain;
+  touch-action:none;transform-origin:center center;will-change:transform;
+}
+.photo-lightbox-close{
+  position:absolute;top:16px;right:20px;background:none;border:none;
+  color:#fff;font-size:2rem;line-height:1;
+}
+.lightbox-mode-btn{
+  position:absolute;top:16px;left:20px;background:rgba(0,0,0,.45);border:none;
+  color:#fff;font-size:1.3rem;line-height:1;border-radius:8px;padding:6px 10px;
+}
+.lightbox-counter{
+  position:absolute;top:20px;left:50%;transform:translateX(-50%);
+  color:#fff;font-size:.9rem;background:rgba(0,0,0,.5);
+  padding:4px 14px;border-radius:20px;
+}
+.lightbox-nav-btn{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.4);border:none;color:#fff;
+  font-size:2.2rem;line-height:1;width:48px;height:64px;
+  border-radius:8px;
+}
+.lightbox-nav-prev{left:6px;}
+.lightbox-nav-next{right:6px;}
+.notes-preview{
+  font-size:.8rem;color:var(--muted);background:var(--bg);
+  border:1px solid var(--line);border-radius:8px;padding:8px 10px;
+  margin-bottom:8px;white-space:pre-wrap;word-break:break-word;
+}
+.notes-overlay{
+  position:fixed;inset:0;background:rgba(10,11,14,.98);
+  display:none;flex-direction:column;z-index:360;padding:16px;
+}
+.notes-overlay.open{display:flex;}
+.notes-overlay-header{
+  display:flex;align-items:center;justify-content:space-between;
+  color:var(--text);font-weight:700;font-size:1.05rem;margin-bottom:12px;
+}
+.notes-overlay textarea{
+  flex:1;width:100%;resize:none;background:var(--panel);color:var(--text);
+  border:1px solid var(--line);border-radius:10px;padding:14px;font-size:1rem;
+  line-height:1.5;
+}
+.notes-overlay textarea:focus{outline:none;border-color:var(--accent);}
+.toast-msg.show{opacity:1;}
+#confirmModal{ z-index: 1080; }
+
+/* ---------- Sustituto propio de Bootstrap (sin CDN, funciona offline) ---------- */
+.btn{
+  display:inline-block;border:1px solid transparent;border-radius:8px;
+  padding:8px 14px;font-size:.95rem;font-weight:500;text-align:center;
+  cursor:pointer;line-height:1.4;background:var(--panel2);color:var(--text);
+}
+.btn-ghost{background:none;border:1px solid var(--line);color:var(--text);}
+.btn-accent{background:var(--accent);border:none;color:#fff;}
+.btn-accent:hover{background:#e85a2e;color:#fff;}
+.form-control,.form-select{
+  display:block;width:100%;background:var(--bg);color:var(--text);
+  border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.95rem;
+}
+.form-select{-webkit-appearance:none;appearance:none;}
+.form-control:focus,.form-select:focus{background:var(--bg);color:var(--text);border-color:var(--accent);outline:none;}
+.w-100{width:100%;}
+.text-center{text-align:center;}
+.text-start{text-align:left;}
+.d-block{display:block;}
+.mb-0{margin-bottom:0;}
+.mb-1{margin-bottom:.25rem;}
+.mb-2{margin-bottom:.5rem;}
+.mb-3{margin-bottom:1rem;}
+.mt-1{margin-top:.25rem;}
+.mt-2{margin-top:.5rem;}
+.border-0{border:none !important;}
+
+.modal-backdrop-custom{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:1050;display:none;
+}
+.modal-backdrop-custom.show{display:block;}
+.modal{
+  position:fixed;inset:0;z-index:1055;display:none;
+  align-items:flex-end;justify-content:center;padding:0;
+}
+.modal.show{display:flex;}
+.modal-dialog{
+  width:100%;max-width:500px;margin:0 auto;
+}
+.modal-content{
+  background:var(--panel);color:var(--text);
+  border:1px solid var(--line);border-radius:16px 16px 0 0;
+  max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
+}
+@media (min-width:560px){
+  .modal{align-items:center;padding:16px;}
+  .modal-content{border-radius:16px;}
+}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;flex-shrink:0;
+}
+.modal-title{font-size:1.15rem;font-weight:700;margin:0;}
+.modal-body{padding:0 20px 16px 20px;overflow-y:auto;}
+.modal-footer{
+  display:flex;justify-content:flex-end;gap:8px;
+  padding:12px 20px 20px 20px;flex-shrink:0;
+}
+.btn-close{
+  background:none;border:none;color:var(--text);font-size:1.6rem;
+  line-height:1;opacity:.8;padding:0 4px;cursor:pointer;
+}
+.btn-close::before{ content: '✕'; }
+.btn-close:hover{opacity:1;}
+</style>
+</head>
+<body>
+<div class="modal-backdrop-custom" id="customModalBackdrop"></div>
+
+<div class="topbar">
+  <div class="brand">Mi<span>Entreno</span>Pro</div>
+  <div>
+    <button class="icon-btn" onclick="toggleLock()" id="lockBtn" title="Bloquear edición">🔓</button>
+    <button class="icon-btn" onclick="openBackupModal()" title="Copia de seguridad">💾</button>
+  </div>
+</div>
+
+<div class="tabbar">
+  <button class="tab-btn active" id="tabAllBtn" onclick="switchTab('all')">Todos</button>
+  <button class="tab-btn" id="tabSelBtn" onclick="switchTab('selected')">Mi selección<span class="tab-badge" id="selCount" style="display:none;"></span></button>
+</div>
+
+<div class="container-app" id="catList"></div>
+<div id="emptyState" class="empty-state" style="display:none;">
+  <div style="font-size:2.5rem;">🏋️</div>
+  <p>Aún no tienes categorías.<br>Toca el botón + para crear la primera.</p>
+</div>
+
+<div class="container-app" id="weeklyChartPanel" style="display:none;">
+  <div class="cat-card" id="todaySummaryCard" style="padding:14px 16px;margin-bottom:14px;display:none;">
+    <div style="font-weight:700;" id="todaySummaryText"></div>
+  </div>
+  <div class="cat-card" style="margin-bottom:14px;">
+    <div class="cat-header" onclick="toggleWeeklyFolder()">
+      <div class="cat-title" style="flex:1;">📊 Progreso semanal</div>
+    </div>
+    <div class="cat-body" id="weeklyFolderBody">
+      <div class="cat-card" style="padding:14px 16px;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;">
+          <div style="font-weight:700;">📊 Progreso semanal</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="icon-btn" onclick="event.stopPropagation(); weekPrev()" title="Semana anterior">◀</button>
+            <span class="small-muted" id="weekRangeLabel" style="min-width:86px;text-align:center;"></span>
+            <button class="icon-btn" id="weekNextBtn" onclick="event.stopPropagation(); weekNext()" title="Semana siguiente">▶</button>
+          </div>
+        </div>
+        <div class="small-muted" id="weeklyTotal" style="margin-bottom:8px;"></div>
+        <canvas id="weeklyChartCanvas" style="width:100%;height:160px;display:block;"></canvas>
+      </div>
+      <div class="cat-card" style="padding:14px 16px;">
+        <button class="btn btn-ghost w-100" onclick="toggleHistoricalWeeks()" id="histToggleBtn">📈 Ver histórico de semanas</button>
+        <div id="historicalWeeksWrap" style="display:none;margin-top:10px;">
+          <div class="small-muted" id="histSummary" style="margin-bottom:6px;"></div>
+          <div class="hist-weeks-scroll" id="historicalWeeksRow"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-app" id="selectedList" style="display:none;"></div>
+<div id="selectedEmpty" class="empty-state" style="display:none;">
+  <div style="font-size:2.5rem;">⭐</div>
+  <p>No has seleccionado ningún ejercicio todavía.<br>Toca la estrella ☆ junto a un ejercicio para añadirlo aquí.</p>
+</div>
+
+<button class="fab" id="mainFab" onclick="openCatModal()">+</button>
+<div class="toast-msg" id="toast"></div>
+
+<div id="restTimerBar" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:1070;background:var(--panel);border-top:2px solid var(--accent);padding:12px 16px;align-items:center;gap:12px;box-shadow:0 -4px 16px rgba(0,0,0,.45);">
+  <div style="font-weight:700;font-size:1.4rem;min-width:70px;" id="restTimerDisplay">01:30</div>
+  <div style="flex:1;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+    <button class="icon-btn" onclick="restTimerAdjust(-15)" title="Quitar 15s">-15s</button>
+    <button class="icon-btn" onclick="restTimerAdjust(15)" title="Añadir 15s">+15s</button>
+    <button class="icon-btn" id="restTimerPauseBtn" onclick="restTimerTogglePause()" title="Pausar">⏸</button>
+    <button class="icon-btn danger" onclick="restTimerStop()" title="Cerrar">✕</button>
+  </div>
+</div>
+
+<!-- Modal Categoria -->
+<div class="modal fade" id="catModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="catModalTitle">Nueva categoría</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="catId">
+        <input type="text" class="form-control mb-3" id="catName" placeholder="Ej: Pecho, Día A, Piernas...">
+        <label class="small-muted d-block mb-2">Tipo de categoría</label>
+        <div class="cat-type-picker">
+          <button type="button" class="cat-type-btn active" id="typeExercisesBtn" onclick="selectCatType('exercises')">
+            🏋️ Rutina de ejercicios<br><span class="small-muted">series, reps, peso e historial</span>
+          </button>
+          <button type="button" class="cat-type-btn" id="typePhotosBtn" onclick="selectCatType('photos')">
+            📷 Álbum de fotos<br><span class="small-muted">solo foto y nombre</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveCat()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ejercicio -->
+<div class="modal fade" id="exModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="exModalTitle">Nuevo ejercicio</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="exId">
+        <input type="hidden" id="exCatId">
+        <input type="text" class="form-control mb-3" id="exName" placeholder="Ej: Press banca">
+        <div id="exPhotoSection">
+          <label class="small-muted d-block mb-1">Foto (opcional)</label>
+          <input type="file" accept="image/*" class="form-control" id="exPhotoInput" onchange="previewPhoto(event)">
+          <div class="ex-photo-wrap mt-2" id="exPhotoPreview" style="display:none;">
+            <img id="exPhotoImg">
+          </div>
+        </div>
+        <p class="small-muted" id="exPhotoEditNote" style="display:none;">Para añadir, ver o quitar fotos, hazlo desde el desplegable del ejercicio.</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveEx()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmar -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p id="confirmText">¿Seguro?</p>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn" style="background:var(--danger);color:#fff;" id="confirmBtn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nuevo día -->
+<div class="modal fade" id="dayModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="dayModalTitle">Nuevo día</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control" id="dayName" placeholder="Ej: Día 1, Push, Lunes...">
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveDay()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Asignar día a un ejercicio -->
+<div class="modal fade" id="dayAssignModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Asignar a un día</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="dayAssignOptions"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Mover a carpeta -->
+<!-- Modal Copiar ejercicio a otra categoría -->
+<div class="modal fade" id="copyExModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Copiar a...</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="copyExOptions"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Mover día a carpeta -->
+<!-- Modal Historial de entrenamientos -->
+<div class="modal fade" id="workoutHistoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Historial de entrenamientos</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="workoutHistoryList"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Meter carpeta de días dentro de otra -->
+<div class="modal fade" id="nestDayFolderModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Meter dentro de otra carpeta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="nestDayFolderOptions"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="dayFolderAssignModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Mover día a una carpeta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="dayFolderAssignOptions"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nombre de carpeta de días -->
+<div class="modal fade" id="dayFolderNameModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="dayFolderNameModalTitle">Nueva carpeta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-3" id="dayFolderNameInput" placeholder="Ej: Gym (Barco), Gym (Casa)...">
+        <label class="small-muted d-block mb-2">Icono de la carpeta</label>
+        <div class="cat-type-picker">
+          <button type="button" class="cat-type-btn active" id="dayFolderIconGymBtn" onclick="selectDayFolderIcon('🏋️')">🏋️ Mancuernas</button>
+          <button type="button" class="cat-type-btn" id="dayFolderIconBookBtn" onclick="selectDayFolderIcon('📚')">📚 Libro</button>
+        </div>
+        <label class="small-muted d-block mb-2 mt-3">Color de la carpeta</label>
+        <div class="color-swatch-row" id="dayFolderColorSwatches"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveDayFolderName()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="folderAssignModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Mover a una carpeta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="folderAssignOptions"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nombre de carpeta -->
+<div class="modal fade" id="folderNameModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="folderNameModalTitle">Nueva carpeta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="form-control mb-3" id="folderNameInput" placeholder="Ej: Tren superior, Rutina A...">
+        <label class="small-muted d-block mb-2">Icono de la carpeta</label>
+        <div class="cat-type-picker">
+          <button type="button" class="cat-type-btn active" id="folderIconGymBtn" onclick="selectFolderIcon('🏋️')">🏋️ Mancuernas</button>
+          <button type="button" class="cat-type-btn" id="folderIconBookBtn" onclick="selectFolderIcon('📚')">📚 Libro</button>
+        </div>
+        <label class="small-muted d-block mb-2 mt-3">Color de la carpeta</label>
+        <div class="color-swatch-row" id="folderColorSwatches"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-accent" onclick="saveFolderName()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backup -->
+<div class="modal fade" id="backupModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Copia de seguridad</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <button class="btn btn-accent w-100 mb-2" onclick="saveBackup()">⬇️ Guardar copia</button>
+        <button class="btn btn-ghost w-100 mb-2" onclick="openBackupsListModal()">🕐 Mis copias</button>
+        <p class="small-muted text-center mb-0" id="backupSummary">Cargando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Copias guardadas -->
+<div class="modal fade" id="backupsListModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Copias guardadas</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="backupsListBody">
+        <p class="small-muted text-center">Cargando...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" accept="image/*" id="addPhotoInput" style="display:none" onchange="handleAddExPhoto(event)">
+
+<div class="photo-lightbox" id="photoLightbox" onclick="closePhotoLightbox()">
+  <button class="lightbox-mode-btn" id="lightboxModeBtn" onclick="event.stopPropagation(); toggleLbGlobalMode()" title="Ver fotos de todos los ejercicios">🔒</button>
+  <button class="photo-lightbox-close" onclick="closePhotoLightbox()">✕</button>
+  <div class="lightbox-counter" id="lightboxCounter" style="display:none;"></div>
+  <button class="lightbox-nav-btn lightbox-nav-prev" id="lightboxPrevBtn" onclick="event.stopPropagation(); lbPrev()" style="display:none;">‹</button>
+  <button class="lightbox-nav-btn lightbox-nav-next" id="lightboxNextBtn" onclick="event.stopPropagation(); lbNext()" style="display:none;">›</button>
+  <img id="photoLightboxImg" src="" onclick="event.stopPropagation()">
+</div>
+
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-overlay-header">
+    <span id="notesOverlayTitle">Notas</span>
+    <button class="photo-lightbox-close" style="position:static;" onclick="closeNotesOverlay()">✕</button>
+  </div>
+  <textarea id="notesTextarea" placeholder="Escribe aquí tus notas: postura, sensaciones, cosas a mejorar..."></textarea>
+  <button class="btn btn-accent" style="margin:12px;" onclick="saveNotesOverlay()">Guardar notas</button>
+</div>
+
+<div class="notes-overlay" id="guidedWorkoutOverlay" style="z-index:300;">
+  <div class="notes-overlay-header">
+    <span id="guidedWorkoutProgress">1 / 1</span>
+    <button class="photo-lightbox-close" style="position:static;" onclick="closeGuidedWorkout()">✕</button>
+  </div>
+  <div id="guidedWorkoutBody" style="flex:1;overflow-y:auto;"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;flex-shrink:0;">
+    <button class="btn btn-ghost" id="guidedWorkoutPrevBtn" style="flex:1;" onclick="guidedWorkoutPrev()">◀ Anterior</button>
+    <button class="btn btn-accent" id="guidedWorkoutNextBtn" style="flex:1;" onclick="guidedWorkoutNext()">Siguiente ▶</button>
+  </div>
+</div>
+
+<script>
+/* ---------- Shim propio de bootstrap.Modal (sin CDN, funciona offline) ---------- */
+window.bootstrap = (function(){
+  const instances = new WeakMap();
+  function getBackdrop(){ return document.getElementById('customModalBackdrop'); }
+  function anyModalOpen(){ return !!document.querySelector('.modal.show'); }
+  class Modal{
+    constructor(el){
+      this.el = el;
+      instances.set(el, this);
+    }
+    show(){
+      this.el.classList.add('show');
+      getBackdrop().classList.add('show');
+    }
+    hide(){
+      this.el.classList.remove('show');
+      if(!anyModalOpen()) getBackdrop().classList.remove('show');
+    }
+    static getInstance(el){
+      if(!el) return null;
+      return instances.get(el) || new Modal(el);
+    }
+    static getOrCreateInstance(el){
+      return Modal.getInstance(el);
+    }
+  }
+  return { Modal };
+})();
+// Botones con data-bs-dismiss="modal" (Cancelar, ✕) cierran el modal donde estén
+document.addEventListener('click', function(e){
+  const dismissEl = e.target.closest('[data-bs-dismiss="modal"]');
+  if(dismissEl){
+    const modalEl = dismissEl.closest('.modal');
+    if(modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+  }
+});
+// Tocar el fondo oscuro cierra el modal visible (igual que hacía Bootstrap)
+document.getElementById('customModalBackdrop').addEventListener('click', function(){
+  const openModal = document.querySelector('.modal.show');
+  if(openModal) bootstrap.Modal.getInstance(openModal).hide();
+});
+</script>
+<script>
+const STORAGE_KEY = 'miEntrenoProData';
+let data = loadData();
+let pendingConfirm = null;
+let editingCatId = null;
+let editingExId = null;
+let stepperState = {};
+
+/* ---------- ALMACÉN DE FOTOS Y COPIAS (IndexedDB) ---------- */
+let photoDBPromise = null;
+function openPhotoDB(){
+  if(photoDBPromise) return photoDBPromise;
+  photoDBPromise = new Promise((resolve, reject)=>{
+    const req = indexedDB.open('miEntrenoProPhotosDB', 2);
+    req.onupgradeneeded = ()=>{
+      const db = req.result;
+      if(!db.objectStoreNames.contains('photos')) db.createObjectStore('photos', { keyPath: 'id' });
+      if(!db.objectStoreNames.contains('backups')) db.createObjectStore('backups', { keyPath: 'id' });
+    };
+    req.onsuccess = ()=> resolve(req.result);
+    req.onerror = ()=> reject(req.error);
+  });
+  return photoDBPromise;
+}
+async function dbPutPhoto(id, dataUrl){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('photos','readwrite');
+    tx.objectStore('photos').put({ id, dataUrl });
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+async function dbGetPhoto(id){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('photos','readonly');
+    const req = tx.objectStore('photos').get(id);
+    req.onsuccess = ()=> resolve(req.result ? req.result.dataUrl : null);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function dbDeletePhoto(id){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('photos','readwrite');
+    tx.objectStore('photos').delete(id);
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+async function dbGetAllPhotos(){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('photos','readonly');
+    const req = tx.objectStore('photos').getAll();
+    req.onsuccess = ()=> resolve(req.result || []);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function dbPutBackup(record){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('backups','readwrite');
+    tx.objectStore('backups').put(record);
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+async function dbGetAllBackups(){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('backups','readonly');
+    const req = tx.objectStore('backups').getAll();
+    req.onsuccess = ()=> resolve(req.result || []);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function dbGetBackup(id){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('backups','readonly');
+    const req = tx.objectStore('backups').get(id);
+    req.onsuccess = ()=> resolve(req.result || null);
+    req.onerror = ()=> reject(req.error);
+  });
+}
+async function dbDeleteBackup(id){
+  const db = await openPhotoDB();
+  return new Promise((resolve, reject)=>{
+    const tx = db.transaction('backups','readwrite');
+    tx.objectStore('backups').delete(id);
+    tx.oncomplete = ()=> resolve(true);
+    tx.onerror = ()=> reject(tx.error);
+  });
+}
+/* Migra el formato antiguo (una sola foto) al nuevo modelo de galería (varias fotos),
+   y carga en memoria las URLs de todas las fotos de cada ejercicio. */
+async function migrateAndHydratePhotos(){
+  let migrated = false;
+  for(const cat of data.categories){
+    for(const ex of cat.exercises){
+      if(!ex.photoIds){
+        if(ex.photo && !ex.hasPhoto){
+          try{
+            await dbPutPhoto(ex.id, ex.photo);
+            ex.photoIds = [ex.id];
+            migrated = true;
+          }catch(e){ console.error('No se pudo migrar la foto de', ex.name, e); }
+        } else if(ex.hasPhoto){
+          ex.photoIds = [ex.id];
+          migrated = true;
+        } else {
+          ex.photoIds = [];
+          migrated = true;
+        }
+        delete ex.photo;
+        delete ex.hasPhoto;
+      }
+      ex.photoUrls = [];
+      for(const pid of ex.photoIds){
+        try{
+          const stored = await dbGetPhoto(pid);
+          if(stored) ex.photoUrls.push(stored);
+        }catch(e){ console.error('No se pudo cargar una foto de', ex.name, e); }
+      }
+    }
+  }
+  if(migrated) saveData();
+}
+
+function stepChange(exId, field, dir, inst){
+  const st = stepperState[exId];
+  if(!st) return;
+  const stepAmount = field === 'weight' ? 0.5 : 1;
+  let val = st[field] + (dir * stepAmount);
+  if(val < 0) val = 0;
+  st[field] = field === 'weight' ? Math.round(val*10)/10 : Math.round(val);
+  const el = document.getElementById(`stv_${field}_${inst}_${exId}`);
+  if(el) el.textContent = st[field];
+}
+
+function confirmQuickLog(catId, exId, inst){
+  const st = stepperState[exId];
+  if(!st) return;
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  ex.history.push({ id: uid(), date: new Date().toISOString(), weight: st.weight, reps: st.reps, series: st.series });
+  saveData();
+  const wasCatOpen = document.getElementById('catBody_'+catId)?.classList.contains('open');
+  const wasExOpen = document.getElementById(`exBody_${inst}_${exId}`)?.classList.contains('open');
+  render();
+  if(wasCatOpen) document.getElementById('catBody_'+catId)?.classList.add('open');
+  if(wasExOpen) document.getElementById(`exBody_${inst}_${exId}`)?.classList.add('open');
+  showToast('Sesión registrada 💪');
+  startRestTimer();
+}
+
+/* ---------- ZOOM Y GALERÍA DEL VISOR DE FOTOS ---------- */
+let lbScale = 1, lbPanX = 0, lbPanY = 0;
+let lbStartDist = 0, lbStartScale = 1;
+let lbStartTouchX = 0, lbStartTouchY = 0;
+let lbLastTap = 0;
+let lbActiveList = []; // [{catId, exId, exName, url}]
+let lbIndex = 0;
+let lbGlobalMode = false;
+let lbSwipeStartX = 0, lbSwipeStartY = 0, lbIsSwipe = false;
+
+function lbApplyTransform(){
+  const img = document.getElementById('photoLightboxImg');
+  img.style.transform = `translate(${lbPanX}px, ${lbPanY}px) scale(${lbScale})`;
+}
+function lbResetZoom(){
+  lbScale = 1; lbPanX = 0; lbPanY = 0;
+  lbApplyTransform();
+}
+function lbGetDistance(touches){
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+function lbTouchStart(e){
+  if(e.touches.length === 2){
+    lbIsSwipe = false;
+    lbStartDist = lbGetDistance(e.touches);
+    lbStartScale = lbScale;
+  } else if(e.touches.length === 1){
+    if(lbScale > 1){
+      lbStartTouchX = e.touches[0].clientX - lbPanX;
+      lbStartTouchY = e.touches[0].clientY - lbPanY;
+    } else {
+      lbIsSwipe = true;
+      lbSwipeStartX = e.touches[0].clientX;
+      lbSwipeStartY = e.touches[0].clientY;
+    }
+    const now = Date.now();
+    if(now - lbLastTap < 300){
+      lbIsSwipe = false;
+      if(lbScale > 1){ lbResetZoom(); }
+      else { lbScale = 2.5; lbApplyTransform(); }
+    }
+    lbLastTap = now;
+  }
+}
+function lbTouchMove(e){
+  if(e.touches.length === 2){
+    e.preventDefault();
+    const dist = lbGetDistance(e.touches);
+    let newScale = lbStartScale * (dist / lbStartDist);
+    lbScale = Math.min(Math.max(newScale, 1), 4);
+    lbApplyTransform();
+  } else if(e.touches.length === 1 && lbScale > 1){
+    e.preventDefault();
+    lbPanX = e.touches[0].clientX - lbStartTouchX;
+    lbPanY = e.touches[0].clientY - lbStartTouchY;
+    lbApplyTransform();
+  }
+}
+function lbTouchEnd(e){
+  if(!lbIsSwipe || lbScale > 1) return;
+  const touch = e.changedTouches && e.changedTouches[0];
+  if(!touch) return;
+  const deltaX = touch.clientX - lbSwipeStartX;
+  const deltaY = touch.clientY - lbSwipeStartY;
+  lbIsSwipe = false;
+  if(Math.abs(deltaX) > 60 && Math.abs(deltaY) < 80){
+    if(deltaX < 0) lbNext();
+    else lbPrev();
+  }
+}
+function lbWheel(e){
+  e.preventDefault();
+  let newScale = lbScale - e.deltaY * 0.001;
+  lbScale = Math.min(Math.max(newScale, 1), 4);
+  if(lbScale === 1){ lbPanX = 0; lbPanY = 0; }
+  lbApplyTransform();
+}
+
+function updateLightboxNavUI(){
+  const counter = document.getElementById('lightboxCounter');
+  const prevBtn = document.getElementById('lightboxPrevBtn');
+  const nextBtn = document.getElementById('lightboxNextBtn');
+  const multi = lbActiveList.length > 1;
+  counter.style.display = multi ? 'block' : 'none';
+  counter.textContent = `${lbIndex+1} / ${lbActiveList.length}`;
+  prevBtn.style.display = multi ? 'flex' : 'none';
+  nextBtn.style.display = multi ? 'flex' : 'none';
+}
+function updateLbModeBtn(){
+  const btn = document.getElementById('lightboxModeBtn');
+  if(!btn) return;
+  btn.textContent = lbGlobalMode ? '🔓' : '🔒';
+  btn.title = lbGlobalMode ? 'Bloquear a este ejercicio' : 'Ver fotos de todos los ejercicios';
+}
+function lbShowCurrent(){
+  const entry = lbActiveList[lbIndex];
+  if(!entry) return;
+  document.getElementById('photoLightboxImg').src = entry.url;
+  lbResetZoom();
+  updateLightboxNavUI();
+}
+function lbNext(){
+  if(lbActiveList.length < 2) return;
+  lbIndex = (lbIndex + 1) % lbActiveList.length;
+  lbShowCurrent();
+}
+function lbPrev(){
+  if(lbActiveList.length < 2) return;
+  lbIndex = (lbIndex - 1 + lbActiveList.length) % lbActiveList.length;
+  lbShowCurrent();
+}
+
+function buildGlobalPhotoList(onlySelected){
+  const list = [];
+  data.categories.forEach(cat=>{
+    cat.exercises.forEach(ex=>{
+      if(onlySelected && !ex.selected) return;
+      (ex.photoUrls||[]).forEach(url=>{
+        list.push({ catId: cat.id, exId: ex.id, exName: ex.name, url });
+      });
+    });
+  });
+  return list;
+}
+function toggleLbGlobalMode(){
+  const current = lbActiveList[lbIndex];
+  if(!current) return;
+  lbGlobalMode = !lbGlobalMode;
+  if(lbGlobalMode){
+    const onlySelected = lbOriginTab === 'selected';
+    lbActiveList = buildGlobalPhotoList(onlySelected);
+    let idx = lbActiveList.findIndex(p=> p.exId===current.exId && p.url===current.url);
+    lbIndex = idx===-1 ? 0 : idx;
+    showToast(onlySelected ? '🔓 Explorando las fotos de tu selección' : '🔓 Ahora puedes pasar a fotos de otros ejercicios');
+  } else {
+    const found = findExById(current.exId);
+    const urls = found ? (found.ex.photoUrls||[]) : [];
+    lbActiveList = urls.map(url=>({ catId: current.catId, exId: current.exId, exName: current.exName, url }));
+    let idx = urls.indexOf(current.url);
+    lbIndex = idx===-1 ? 0 : idx;
+    showToast('🔒 Viendo solo las fotos de este ejercicio');
+  }
+  updateLbModeBtn();
+  updateLightboxNavUI();
+}
+
+let lbOriginTab = 'all';
+function openPhotoLightbox(exId, index, inst){
+  const found = findExById(exId);
+  const urls = found ? (found.ex.photoUrls || []) : [];
+  if(urls.length === 0) return;
+  lbGlobalMode = false;
+  lbOriginTab = (inst && inst.startsWith('sel')) ? 'selected' : 'all';
+  lbActiveList = urls.map(url=>({ catId: found.cat.id, exId: exId, exName: found.ex.name, url }));
+  lbIndex = Math.max(0, Math.min(index, lbActiveList.length-1));
+  updateLbModeBtn();
+  lbShowCurrent();
+  document.getElementById('photoLightbox').classList.add('open');
+  history.pushState({ overlay: 'photo' }, '');
+}
+function revealInTodos(exId){
+  const body = document.getElementById(`exBody_all_${exId}`);
+  if(!body) return;
+  body.classList.add('open');
+  const item = body.closest('.ex-item');
+  if(item){
+    item.scrollIntoView({behavior:'smooth', block:'center'});
+    item.classList.add('reveal-highlight');
+    setTimeout(()=> item.classList.remove('reveal-highlight'), 1600);
+  }
+}
+function revealInSeleccion(exId){
+  const bodies = findSelBodyElements(exId);
+  let firstItem = null;
+  bodies.forEach(body=>{
+    body.classList.add('open');
+    const exItemEl = body.closest('.ex-item'); // el propio ejercicio
+    if(!exItemEl) return;
+    if(!firstItem) firstItem = exItemEl;
+    const subBody = exItemEl.parentElement; // cuerpo de la subcategoría
+    if(subBody && subBody.id){
+      subBody.classList.add('open');
+      selDayOpenState[subBody.id] = true;
+      const subCard = subBody.parentElement; // tarjeta de la subcategoría
+      const dayBody = subCard ? subCard.parentElement : null; // cuerpo del día
+      if(dayBody && dayBody.id){
+        dayBody.classList.add('open');
+        selDayOpenState[dayBody.id] = true;
+      }
+    }
+  });
+  if(firstItem){
+    firstItem.scrollIntoView({behavior:'smooth', block:'center'});
+    firstItem.classList.add('reveal-highlight');
+    setTimeout(()=> firstItem.classList.remove('reveal-highlight'), 1600);
+  }
+  return bodies.length > 0;
+}
+function revealCurrentLbExercise(){
+  const entry = lbActiveList[lbIndex];
+  if(!entry) return;
+  catOpenState[entry.catId] = true;
+  currentTab = lbOriginTab;
+  render();
+  setTimeout(()=>{
+    if(currentTab === 'selected'){
+      const found = revealInSeleccion(entry.exId);
+      if(!found){
+        // El ejercicio no está en Mi selección: mostrarlo en Todos en su lugar
+        currentTab = 'all';
+        render();
+        setTimeout(()=> revealInTodos(entry.exId), 60);
+      }
+      return;
+    }
+    revealInTodos(entry.exId);
+  }, 120);
+}
+function closePhotoLightbox(){
+  const wasOpen = document.getElementById('photoLightbox').classList.contains('open');
+  document.getElementById('photoLightbox').classList.remove('open');
+  if(wasOpen) revealCurrentLbExercise();
+  if(wasOpen && history.state && history.state.overlay === 'photo') history.back();
+}
+
+/* ---------- NOTAS DEL EJERCICIO ---------- */
+let notesTargetExId = null;
+function openNotesOverlay(exId){
+  const found = findExById(exId);
+  if(!found) return;
+  notesTargetExId = exId;
+  document.getElementById('notesTextarea').value = found.ex.notes || '';
+  document.getElementById('notesOverlayTitle').textContent = 'Notas — ' + found.ex.name;
+  document.getElementById('notesOverlay').classList.add('open');
+  history.pushState({ overlay: 'notes' }, '');
+}
+function closeNotesOverlay(){
+  const wasOpen = document.getElementById('notesOverlay').classList.contains('open');
+  document.getElementById('notesOverlay').classList.remove('open');
+  notesTargetExId = null;
+  if(wasOpen && history.state && history.state.overlay === 'notes') history.back();
+}
+function saveNotesOverlay(){
+  if(!notesTargetExId){ closeNotesOverlay(); return; }
+  const found = findExById(notesTargetExId);
+  if(!found){ closeNotesOverlay(); return; }
+  found.ex.notes = document.getElementById('notesTextarea').value;
+  const ok = saveData();
+  const exId = notesTargetExId;
+  const catId = found.cat.id;
+  closeNotesOverlay();
+  if(!ok) return;
+  const state = captureOpenState(catId, exId);
+  render();
+  restoreOpenState(catId, exId, state);
+  showToast('Notas guardadas');
+}
+
+function migrateDayIdsIn(obj){
+  (obj.categories||[]).forEach(cat=>{
+    (cat.exercises||[]).forEach(ex=>{
+      if(!ex.dayIds){
+        ex.dayIds = ex.dayId ? [ex.dayId] : [];
+      }
+      delete ex.dayId;
+    });
+  });
+}
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(!parsed.days) parsed.days = [];
+      if(!parsed.folders) parsed.folders = [];
+      if(!parsed.dayFolders) parsed.dayFolders = [];
+      if(!parsed.workoutSummaries) parsed.workoutSummaries = [];
+      if(typeof parsed.locked !== 'boolean') parsed.locked = false;
+      migrateDayIdsIn(parsed);
+      return parsed;
+    }
+  }catch(e){}
+  return { categories: [], days: [], locked: false };
+}
+function saveData(){
+  try{
+    // El campo "photo" nunca se guarda en localStorage: vive en IndexedDB.
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data, (key, value)=> (key==='photo' || key==='photoUrls') ? undefined : value));
+    return true;
+  }catch(e){
+    console.error('Error guardando en localStorage:', e);
+    showToast('⚠️ No se pudo guardar. Inténtalo de nuevo.');
+    return false;
+  }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit'});
+}
+
+/* ---------- TEMPORIZADOR DE DESCANSO ---------- */
+let restTimerRemaining = 0;
+let restTimerInterval = null;
+let restTimerPaused = false;
+let restTimerAudioCtx = null;
+let restTimerAlertInterval = null;
+
+function getRestTimerAudioCtx(){
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if(!Ctx) return null;
+  if(!restTimerAudioCtx) restTimerAudioCtx = new Ctx();
+  return restTimerAudioCtx;
+}
+function restTimerDefaultSeconds(){
+  return (data && typeof data.restTimerDefault === 'number') ? data.restTimerDefault : 90;
+}
+function startRestTimer(seconds){
+  // Crear/desbloquear el audio AQUÍ, dentro del gesto del usuario (tocar ✔),
+  // para que luego sí se pueda reproducir el pitido cuando acabe la cuenta.
+  const ctx = getRestTimerAudioCtx();
+  if(ctx && ctx.state === 'suspended'){ ctx.resume().catch(()=>{}); }
+
+  if(restTimerAlertInterval){ clearInterval(restTimerAlertInterval); restTimerAlertInterval = null; }
+  const bar = document.getElementById('restTimerBar');
+  bar.classList.remove('rest-timer-done');
+  restTimerRemaining = seconds != null ? seconds : restTimerDefaultSeconds();
+  restTimerPaused = false;
+  document.getElementById('restTimerPauseBtn').textContent = '⏸';
+  bar.style.display = 'flex';
+  updateRestTimerDisplay();
+  restTimerStartTicking();
+}
+function restTimerStartTicking(){
+  if(restTimerInterval) clearInterval(restTimerInterval);
+  restTimerInterval = setInterval(()=>{
+    if(restTimerPaused) return;
+    restTimerRemaining--;
+    if(restTimerRemaining <= 0){
+      restTimerFinish();
+      return;
+    }
+    updateRestTimerDisplay();
+  }, 1000);
+}
+function updateRestTimerDisplay(){
+  const safe = Math.max(restTimerRemaining, 0);
+  const m = Math.floor(safe/60);
+  const s = safe % 60;
+  const el = document.getElementById('restTimerDisplay');
+  if(el) el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+function restTimerAdjust(delta){
+  const bar = document.getElementById('restTimerBar');
+  if(bar.style.display === 'none') return;
+  restTimerRemaining = Math.max(0, restTimerRemaining + delta);
+  data.restTimerDefault = Math.max(15, restTimerDefaultSeconds() + delta);
+  saveData();
+  updateRestTimerDisplay();
+
+  // Si el aviso ya había sonado (cuenta a 0) y añadimos tiempo, volver a contar
+  if(restTimerInterval == null && restTimerRemaining > 0){
+    if(restTimerAlertInterval){ clearInterval(restTimerAlertInterval); restTimerAlertInterval = null; }
+    bar.classList.remove('rest-timer-done');
+    restTimerPaused = false;
+    document.getElementById('restTimerPauseBtn').textContent = '⏸';
+    restTimerStartTicking();
+  }
+}
+function restTimerTogglePause(){
+  restTimerPaused = !restTimerPaused;
+  document.getElementById('restTimerPauseBtn').textContent = restTimerPaused ? '▶' : '⏸';
+}
+function restTimerStop(){
+  if(restTimerInterval) clearInterval(restTimerInterval);
+  restTimerInterval = null;
+  if(restTimerAlertInterval){ clearInterval(restTimerAlertInterval); restTimerAlertInterval = null; }
+  const bar = document.getElementById('restTimerBar');
+  if(bar){ bar.style.display = 'none'; bar.classList.remove('rest-timer-done'); }
+}
+function restTimerFinish(){
+  if(restTimerInterval) clearInterval(restTimerInterval);
+  restTimerInterval = null;
+  updateRestTimerDisplay();
+  const bar = document.getElementById('restTimerBar');
+  if(bar) bar.classList.add('rest-timer-done');
+  showToast('⏱️ ¡Descanso terminado! Toca ✕ para parar el aviso');
+
+  const alertOnce = ()=>{
+    try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){}
+    playRestTimerBeep();
+  };
+  alertOnce();
+  if(restTimerAlertInterval) clearInterval(restTimerAlertInterval);
+  restTimerAlertInterval = setInterval(alertOnce, 2000);
+}
+function playRestTimerBeep(){
+  try{
+    const ctx = getRestTimerAudioCtx();
+    if(!ctx) return;
+    const resumeAndPlay = ()=>{
+      [0, 0.35].forEach(offset=>{
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.value = 880;
+        const t0 = ctx.currentTime + offset;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.3);
+        o.connect(g); g.connect(ctx.destination);
+        o.start(t0);
+        o.stop(t0 + 0.32);
+      });
+    };
+    if(ctx.state === 'suspended'){ ctx.resume().then(resumeAndPlay).catch(()=>{}); }
+    else resumeAndPlay();
+  }catch(e){ console.error('No se pudo reproducir el sonido del temporizador:', e); }
+}
+
+/* ---------- RENDER ---------- */
+function render(){
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  const list = document.getElementById('catList');
+  list.innerHTML = '';
+  if(data.categories.length > 0){
+    // Primero las carpetas, en su propio orden (arrastrable); luego las categorías sueltas.
+    (data.folders||[]).forEach(folder=>{
+      const catsInFolder = data.categories.filter(c=>c.folderId===folder.id);
+      if(catsInFolder.length===0) return;
+      const folderInfo = buildFolderCard(folder, catsInFolder);
+      list.appendChild(folderInfo.card);
+      const folderBody = document.getElementById(folderInfo.bodyId);
+      catsInFolder.forEach(c=>{
+        const el = buildCategoryCard(c);
+        folderBody.appendChild(el);
+        renderExercises(c);
+      });
+    });
+    const validFolderIds = new Set((data.folders||[]).map(f=>f.id));
+    data.categories.forEach(cat=>{
+      if(cat.folderId && validFolderIds.has(cat.folderId)) return; // ya renderizada dentro de su carpeta
+      const el = buildCategoryCard(cat);
+      list.appendChild(el);
+      renderExercises(cat);
+    });
+  }
+  renderSelected();
+  switchTab(currentTab);
+  window.scrollTo(scrollX, scrollY);
+}
+
+function buildCategoryCard(cat){
+  const card = document.createElement('div');
+  card.className = 'cat-card';
+  card.dataset.catId = cat.id;
+  const shouldBeOpen = catOpenState.hasOwnProperty(cat.id) ? catOpenState[cat.id] : false;
+  const catHandle = data.locked ? '' : `<div class="drag-handle" onpointerdown="catDragStart(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar">⠿</div>`;
+  const catFolderBtn = data.locked ? '' : `<button onclick="openFolderAssignModal('${cat.id}')" title="Mover a carpeta">📁</button>`;
+  const catEditBtn = data.locked ? '' : `<button onclick="openCatModal('${cat.id}')" title="Editar categoría">✏️</button>`;
+  const catDeleteBtn = data.locked ? '' : `<button class="icon-btn danger" onclick="askDeleteCat('${cat.id}')" title="Eliminar categoría">🗑️</button>`;
+  card.innerHTML = `
+    <div class="cat-header" onclick="toggleCat('${cat.id}')">
+      ${catHandle}
+      <div class="cat-title">${cat.type==='photos' ? '📷 ' : ''}${escapeHtml(cat.name)} <span class="cat-count">${cat.exercises.length}</span></div>
+      <div class="cat-actions" onclick="event.stopPropagation()">
+        <button onclick="openExModal('${cat.id}')" title="Añadir ejercicio">➕</button>
+        ${catFolderBtn}
+        ${catEditBtn}
+        ${catDeleteBtn}
+      </div>
+    </div>
+    <div class="cat-body${shouldBeOpen ? ' open' : ''}" id="catBody_${cat.id}"></div>
+  `;
+  return card;
+}
+
+let folderOpenState = {};
+function toggleFolder(folderId){
+  const body = document.getElementById('folderBody_'+folderId);
+  const isOpen = body.classList.toggle('open');
+  folderOpenState[folderId] = isOpen;
+}
+const FOLDER_ACCENT_COLORS = ['#e07a5f','#81b29a','#3d9bd1','#9381ff','#e5a84b','#5bbf9e','#d16ba5','#6b8fd4'];
+function folderAccentColor(folderId){
+  let hash = 0;
+  for(let i=0; i<folderId.length; i++){ hash = (hash*31 + folderId.charCodeAt(i)) % 100000; }
+  return FOLDER_ACCENT_COLORS[hash % FOLDER_ACCENT_COLORS.length];
+}
+function buildFolderCard(folder, cats){
+  const card = document.createElement('div');
+  card.className = 'cat-card';
+  card.dataset.folderId = folder.id;
+  card.style.borderLeft = `3px solid ${folder.color || folderAccentColor(folder.id)}`;
+  const bodyId = 'folderBody_' + folder.id;
+  const shouldBeOpen = folderOpenState.hasOwnProperty(folder.id) ? folderOpenState[folder.id] : false;
+  const totalCount = cats.reduce((sum,c)=> sum + c.exercises.length, 0);
+  const folderHandle = data.locked ? '' : `<div class="drag-handle" onpointerdown="folderDragStart(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar carpetas">⠿</div>`;
+  const editBtn = data.locked ? '' : `<button onclick="event.stopPropagation(); openRenameFolderModal('${folder.id}')" title="Renombrar carpeta">✏️</button>`;
+  const deleteBtn = data.locked ? '' : `<button class="icon-btn danger" onclick="event.stopPropagation(); askDeleteFolder('${folder.id}')" title="Eliminar carpeta">🗑️</button>`;
+  card.innerHTML = `
+    <div class="cat-header" onclick="toggleFolder('${folder.id}')">
+      ${folderHandle}
+      <div class="cat-title" style="flex:1;">${folder.icon || '🏋️'} ${escapeHtml(folder.name)} <span class="cat-count">${cats.length} · ${totalCount}</span></div>
+      <div class="cat-actions" onclick="event.stopPropagation()">
+        ${editBtn}
+        ${deleteBtn}
+      </div>
+    </div>
+    <div class="cat-body${shouldBeOpen ? ' open' : ''}" id="${bodyId}"></div>
+  `;
+  return { card, bodyId };
+}
+
+let catOpenState = {}; // catId -> true/false explícito una vez que el usuario lo toca
+let exOpenState = {}; // `${inst}_${exId}` -> true/false, para que sobreviva a los render() completos
+
+function toggleCat(catId){
+  const body = document.getElementById('catBody_'+catId);
+  const isOpen = body.classList.toggle('open');
+  catOpenState[catId] = isOpen;
+}
+
+function catHasSelected(cat){
+  return cat.exercises.some(ex=>ex.selected);
+}
+
+/* ---------- CARPETAS DE CATEGORÍAS ---------- */
+let folderAssignCatId = null;
+let pendingFolderAssignCatId = null;
+let editingFolderId = null;
+let currentFolderIcon = '🏋️';
+let currentFolderColor = null;
+
+function selectFolderIcon(icon){
+  currentFolderIcon = icon;
+  document.getElementById('folderIconGymBtn').classList.toggle('active', icon==='🏋️');
+  document.getElementById('folderIconBookBtn').classList.toggle('active', icon==='📚');
+}
+function buildColorSwatchesHtml(selectedColor, onSelectFnName){
+  let html = `<button type="button" class="color-swatch auto${!selectedColor ? ' active' : ''}" onclick="${onSelectFnName}(null)" title="Automático">A</button>`;
+  FOLDER_ACCENT_COLORS.forEach(c=>{
+    html += `<button type="button" class="color-swatch${selectedColor===c ? ' active' : ''}" style="background:${c};" onclick="${onSelectFnName}('${c}')"></button>`;
+  });
+  return html;
+}
+function renderFolderColorSwatches(){
+  document.getElementById('folderColorSwatches').innerHTML = buildColorSwatchesHtml(currentFolderColor, 'selectFolderColor');
+}
+function selectFolderColor(color){
+  currentFolderColor = color;
+  renderFolderColorSwatches();
+}
+
+function openFolderAssignModal(catId){
+  folderAssignCatId = catId;
+  renderFolderAssignOptions();
+  new bootstrap.Modal(document.getElementById('folderAssignModal')).show();
+}
+function renderFolderAssignOptions(){
+  const container = document.getElementById('folderAssignOptions');
+  const cat = data.categories.find(c=>c.id===folderAssignCatId);
+  const currentFolderId = cat ? cat.folderId : null;
+  let html = `<button class="btn btn-ghost w-100 mb-2 text-start" onclick="chooseFolderForCat('')">${!currentFolderId ? '✓ ' : ''}Sin carpeta</button>`;
+  (data.folders||[]).forEach(f=>{
+    const checked = currentFolderId === f.id;
+    html += `
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="btn ${checked ? 'btn-accent' : 'btn-ghost'} text-start" style="flex:1;" onclick="chooseFolderForCat('${f.id}')">${checked ? '✓ ' : ''}${f.icon || '🏋️'} ${escapeHtml(f.name)}</button>
+        <button class="btn" style="background:var(--danger);color:#fff;flex:0 0 auto;" onclick="event.stopPropagation(); askDeleteFolder('${f.id}')" title="Eliminar carpeta">🗑️</button>
+      </div>`;
+  });
+  html += `<button class="btn btn-accent w-100 mt-1" onclick="createFolderForCat()">➕ Crear nueva carpeta</button>`;
+  container.innerHTML = html;
+}
+function chooseFolderForCat(folderId){
+  const cat = data.categories.find(c=>c.id===folderAssignCatId);
+  if(cat) cat.folderId = folderId || null;
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('folderAssignModal')).hide();
+}
+function createFolderForCat(){
+  pendingFolderAssignCatId = folderAssignCatId;
+  editingFolderId = null;
+  bootstrap.Modal.getInstance(document.getElementById('folderAssignModal')).hide();
+  document.getElementById('folderNameInput').value = '';
+  document.getElementById('folderNameModalTitle').textContent = 'Nueva carpeta';
+  selectFolderIcon('🏋️');
+  currentFolderColor = null;
+  renderFolderColorSwatches();
+  new bootstrap.Modal(document.getElementById('folderNameModal')).show();
+}
+function openRenameFolderModal(folderId){
+  const f = (data.folders||[]).find(x=>x.id===folderId);
+  if(!f) return;
+  editingFolderId = folderId;
+  pendingFolderAssignCatId = null;
+  document.getElementById('folderNameInput').value = f.name;
+  document.getElementById('folderNameModalTitle').textContent = 'Renombrar carpeta';
+  selectFolderIcon(f.icon || '🏋️');
+  currentFolderColor = f.color || null;
+  renderFolderColorSwatches();
+  new bootstrap.Modal(document.getElementById('folderNameModal')).show();
+}
+function saveFolderName(){
+  const name = document.getElementById('folderNameInput').value.trim();
+  if(!name){ showToast('Ponle un nombre a la carpeta'); return; }
+  if(!data.folders) data.folders = [];
+  if(!data.dayFolders) data.dayFolders = [];
+  if(!data.workoutSummaries) data.workoutSummaries = [];
+  if(editingFolderId){
+    const f = data.folders.find(x=>x.id===editingFolderId);
+    if(f){ f.name = name; f.icon = currentFolderIcon; f.color = currentFolderColor; }
+  } else {
+    const newFolder = { id: uid(), name, icon: currentFolderIcon, color: currentFolderColor };
+    data.folders.push(newFolder);
+    if(pendingFolderAssignCatId){
+      const cat = data.categories.find(c=>c.id===pendingFolderAssignCatId);
+      if(cat) cat.folderId = newFolder.id;
+      pendingFolderAssignCatId = null;
+    }
+  }
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('folderNameModal')).hide();
+  showToast(editingFolderId ? 'Carpeta renombrada' : 'Carpeta creada');
+}
+function askDeleteFolder(folderId){
+  const f = (data.folders||[]).find(x=>x.id===folderId);
+  if(!f) return;
+  document.getElementById('confirmText').textContent = `¿Eliminar la carpeta "${f.name}"? Las categorías que contiene no se borran, solo quedan sueltas.`;
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    data.categories.forEach(c=>{ if(c.folderId===folderId) c.folderId = null; });
+    data.folders = data.folders.filter(x=>x.id!==folderId);
+    saveData();
+    modal.hide();
+    render();
+    if(document.getElementById('folderAssignOptions')) renderFolderAssignOptions();
+    showToast('Carpeta eliminada');
+  };
+  modal.show();
+}
+
+function buildExerciseItemHTML(cat, ex, showCatTag, inst, dayIdCtx, useDayOrderHandle){
+  const catTag = showCatTag ? `<span class="cat-tag">${escapeHtml(cat.name)}</span>` : '';
+  const isSel = inst.startsWith('sel');
+  const dayArg = dayIdCtx ? `'${dayIdCtx}'` : 'null';
+  const starBtn = cat.type==='photos' ? '' : (isSel
+    ? `<button class="icon-btn star-btn" onclick="toggleSelectInDay('${cat.id}','${ex.id}',${dayArg})" title="Quitar de este día / de mi selección">⭐</button>`
+    : `<button class="icon-btn star-btn" onclick="toggleSelect('${cat.id}','${ex.id}')" title="${ex.selected ? 'Quitar de mi selección' : 'Añadir a mi selección'}">${ex.selected ? '⭐' : '☆'}</button>`);
+  const dragFn = useDayOrderHandle ? 'dayExOrderDragStart' : 'exDragStart';
+  const exHandle = !data.locked ? `<div class="drag-handle" onpointerdown="${dragFn}(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar">⠿</div>` : '';
+  const dayEditBtn = (inst.startsWith('sel') && !data.locked) ? `<button class="icon-btn" onclick="openDayAssignModal('${ex.id}')" title="Cambiar de día">✏️🗓️</button>` : '';
+  const exEditBtn = (inst.startsWith('sel') || data.locked) ? '' : `<button class="icon-btn" onclick="openExModal('${cat.id}','${ex.id}')" title="Editar">✏️</button>`;
+  const exDeleteBtn = (inst.startsWith('sel') || data.locked) ? '' : `<button class="icon-btn danger" onclick="askDeleteEx('${cat.id}','${ex.id}')" title="Eliminar">🗑️</button>`;
+  const exCopyBtn = (inst.startsWith('sel') || data.locked) ? '' : `<button class="icon-btn" onclick="openCopyExModal('${cat.id}','${ex.id}')" title="Copiar a otra categoría">📋</button>`;
+  return `
+      <div class="ex-header" onclick="toggleEx('${ex.id}','${inst}')">
+        ${exHandle}
+        <div class="ex-name" style="flex:1;">${escapeHtml(ex.name)}${catTag}</div>
+        <div onclick="event.stopPropagation()">
+          ${dayEditBtn}
+          ${starBtn}
+          ${exCopyBtn}
+          ${exEditBtn}
+          ${exDeleteBtn}
+        </div>
+      </div>
+      <div class="ex-body${exOpenState[`${inst}_${ex.id}`] ? ' open' : ''}" id="exBody_${inst}_${ex.id}"></div>
+  `;
+}
+
+function renderExercises(cat){
+  const body = document.getElementById('catBody_'+cat.id);
+  if(!body) return;
+  body.innerHTML = '';
+  if(cat.exercises.length === 0){
+    body.innerHTML = '<p class="small-muted text-center py-2">Sin ejercicios todavía.</p>';
+    return;
+  }
+  cat.exercises.forEach(ex=>{
+    const item = document.createElement('div');
+    item.className = 'ex-item';
+    item.dataset.exId = ex.id;
+    item.dataset.catId = cat.id;
+    item.innerHTML = buildExerciseItemHTML(cat, ex, false, 'all');
+    body.appendChild(item);
+    renderExDetail(cat, ex, 'all');
+  });
+}
+
+function getSelectedExercises(){
+  const items = [];
+  data.categories.forEach(cat=>{
+    cat.exercises.forEach(ex=>{
+      if(ex.selected) items.push({cat, ex});
+    });
+  });
+  return items;
+}
+
+/* ---------- MODO ENTRENAMIENTO GUIADO ---------- */
+let guidedWorkoutDayId = null;
+let guidedWorkoutItems = [];
+let guidedWorkoutIndex = 0;
+let guidedWorkoutStartTime = null;
+let guidedWorkoutLoggedSets = []; // {weight, reps, series} de lo registrado DURANTE esta sesión guiada
+let guidedWorkoutReturnToHistoryDayId = null; // si no es null, al cerrar volvemos al historial de ese día
+
+function getDayExercises(dayId){
+  const items = getSelectedExercises().filter(it => (it.ex.dayIds||[]).includes(dayId));
+  const day = (data.days||[]).find(d=>d.id===dayId);
+  return getDayOrderedItems(day, items);
+}
+function startGuidedWorkout(dayId){
+  const items = getDayExercises(dayId);
+  if(items.length === 0){ showToast('Este día no tiene ejercicios'); return; }
+  guidedWorkoutReturnToHistoryDayId = null;
+  guidedWorkoutDayId = dayId;
+  guidedWorkoutItems = items;
+  guidedWorkoutIndex = 0;
+  guidedWorkoutStartTime = Date.now();
+  guidedWorkoutLoggedSets = [];
+  document.getElementById('guidedWorkoutOverlay').classList.add('open');
+  renderGuidedWorkoutStep();
+}
+function closeGuidedWorkout(){
+  document.getElementById('guidedWorkoutOverlay').classList.remove('open');
+  document.getElementById('guidedWorkoutPrevBtn').style.display = '';
+  const nextBtn = document.getElementById('guidedWorkoutNextBtn');
+  nextBtn.textContent = 'Siguiente ▶';
+  nextBtn.onclick = guidedWorkoutNext;
+
+  if(guidedWorkoutReturnToHistoryDayId){
+    const dayId = guidedWorkoutReturnToHistoryDayId;
+    guidedWorkoutReturnToHistoryDayId = null;
+    openWorkoutHistoryModal(dayId);
+  }
+}
+function renderGuidedWorkoutStep(){
+  // Volver a calcular por si el historial/orden cambió tras registrar una sesión
+  guidedWorkoutItems = getDayExercises(guidedWorkoutDayId);
+  const total = guidedWorkoutItems.length;
+  if(total === 0){ closeGuidedWorkout(); return; }
+  if(guidedWorkoutIndex >= total) guidedWorkoutIndex = total - 1;
+  if(guidedWorkoutIndex < 0) guidedWorkoutIndex = 0;
+
+  const { cat, ex } = guidedWorkoutItems[guidedWorkoutIndex];
+  document.getElementById('guidedWorkoutProgress').textContent = `${guidedWorkoutIndex+1} / ${total}`;
+  document.getElementById('guidedWorkoutPrevBtn').disabled = guidedWorkoutIndex === 0;
+  document.getElementById('guidedWorkoutNextBtn').textContent = (guidedWorkoutIndex === total-1) ? 'Finalizar ✔' : 'Siguiente ▶';
+
+  const instId = 'sel_guided';
+  const detailHtml = cat.type === 'photos'
+    ? buildExDetailPhotosHtml(ex, instId)
+    : buildExDetailFullHtml(cat, ex, instId, `confirmQuickLogGuided('${cat.id}','${ex.id}')`);
+
+  document.getElementById('guidedWorkoutBody').innerHTML = `
+    <div class="cat-tag" style="display:inline-block;margin-bottom:6px;">${escapeHtml(cat.name)}</div>
+    <div style="font-size:1.3rem;font-weight:700;margin-bottom:10px;">${escapeHtml(ex.name)}</div>
+    ${detailHtml}
+  `;
+  if(cat.type !== 'photos' && ex.history.length >= 2){
+    renderExerciseChart(`chart_${instId}_${ex.id}`, ex.history);
+  }
+}
+function guidedWorkoutPrev(){
+  if(guidedWorkoutIndex > 0){ guidedWorkoutIndex--; renderGuidedWorkoutStep(); }
+}
+function guidedWorkoutNext(){
+  if(guidedWorkoutIndex < guidedWorkoutItems.length - 1){
+    guidedWorkoutIndex++;
+    renderGuidedWorkoutStep();
+  } else {
+    renderGuidedWorkoutSummary();
+  }
+}
+function buildWorkoutSummaryHtml(totalKg, totalSeries, elapsedMs){
+  const totalMin = Math.floor(elapsedMs/60000);
+  const totalSec = Math.floor((elapsedMs%60000)/1000);
+  return `
+    <div style="text-align:center;padding:24px 10px;">
+      <div style="font-size:2.4rem;">💪</div>
+      <div style="font-size:1.4rem;font-weight:700;margin:10px 0;">¡Entrenamiento terminado!</div>
+      <div class="cat-card" style="padding:16px;margin-top:16px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+          <span class="small-muted">⏱️ Tiempo</span>
+          <span style="font-weight:700;">${totalMin}m ${String(totalSec).padStart(2,'0')}s</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+          <span class="small-muted">🏋️ Volumen total</span>
+          <span style="font-weight:700;">${Math.round(totalKg).toLocaleString('es-ES')} kg</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span class="small-muted">🔢 Series totales</span>
+          <span style="font-weight:700;">${totalSeries}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function showWorkoutSummaryScreen(titleText, totalKg, totalSeries, elapsedMs){
+  document.getElementById('guidedWorkoutProgress').textContent = titleText;
+  document.getElementById('guidedWorkoutBody').innerHTML = buildWorkoutSummaryHtml(totalKg, totalSeries, elapsedMs);
+  document.getElementById('guidedWorkoutPrevBtn').style.display = 'none';
+  const nextBtn = document.getElementById('guidedWorkoutNextBtn');
+  nextBtn.textContent = 'Cerrar';
+  nextBtn.onclick = closeGuidedWorkout;
+}
+function renderGuidedWorkoutSummary(){
+  const totalKg = guidedWorkoutLoggedSets.reduce((sum,s)=> sum + (s.weight*s.reps*s.series), 0);
+  const totalSeries = guidedWorkoutLoggedSets.reduce((sum,s)=> sum + s.series, 0);
+  const elapsedMs = Date.now() - (guidedWorkoutStartTime || Date.now());
+
+  const day = (data.days||[]).find(d=>d.id===guidedWorkoutDayId);
+  if(!data.workoutSummaries) data.workoutSummaries = [];
+  data.workoutSummaries.push({
+    id: uid(),
+    dayId: guidedWorkoutDayId,
+    dayName: day ? day.name : '',
+    date: new Date().toISOString(),
+    elapsedMs, totalKg, totalSeries
+  });
+  saveData();
+
+  document.getElementById('guidedWorkoutOverlay').classList.add('open');
+  showWorkoutSummaryScreen('Resumen', totalKg, totalSeries, elapsedMs);
+}
+
+/* ---------- HISTORIAL DE ENTRENAMIENTOS GUIADOS ---------- */
+function openWorkoutHistoryModal(dayId){
+  const records = (data.workoutSummaries||[])
+    .filter(r=>r.dayId===dayId)
+    .sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const list = document.getElementById('workoutHistoryList');
+  if(records.length === 0){
+    list.innerHTML = '<p class="small-muted text-center py-2">Todavía no has completado ningún entrenamiento guiado en este día.</p>';
+  } else {
+    list.innerHTML = records.map(r=>{
+      const d = new Date(r.date);
+      const dateStr = d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit'});
+      const timeStr = d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      const min = Math.floor(r.elapsedMs/60000);
+      return `
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button class="btn btn-ghost text-start" style="flex:1;display:flex;justify-content:space-between;align-items:center;" onclick="viewStoredWorkoutSummary('${r.id}')">
+            <span>${dateStr} · ${timeStr}</span>
+            <span class="small-muted">${Math.round(r.totalKg).toLocaleString('es-ES')} kg · ${r.totalSeries} series · ${min} min</span>
+          </button>
+          <button class="btn" style="background:var(--danger);color:#fff;flex:0 0 auto;" onclick="askDeleteWorkoutSummary('${r.id}','${dayId}')" title="Eliminar este registro">🗑️</button>
+        </div>`;
+    }).join('');
+  }
+  new bootstrap.Modal(document.getElementById('workoutHistoryModal')).show();
+}
+function askDeleteWorkoutSummary(summaryId, dayId){
+  document.getElementById('confirmText').textContent = '¿Eliminar este entrenamiento guardado? No se puede deshacer.';
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    data.workoutSummaries = (data.workoutSummaries||[]).filter(r=>r.id!==summaryId);
+    saveData();
+    modal.hide();
+    openWorkoutHistoryModal(dayId);
+    showToast('Entrenamiento eliminado');
+  };
+  modal.show();
+}
+function viewStoredWorkoutSummary(summaryId){
+  const r = (data.workoutSummaries||[]).find(x=>x.id===summaryId);
+  if(!r) return;
+  bootstrap.Modal.getInstance(document.getElementById('workoutHistoryModal'))?.hide();
+  guidedWorkoutReturnToHistoryDayId = r.dayId;
+  const d = new Date(r.date);
+  const dateStr = d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit'});
+  document.getElementById('guidedWorkoutOverlay').classList.add('open');
+  showWorkoutSummaryScreen(dateStr, r.totalKg, r.totalSeries, r.elapsedMs);
+}
+function confirmQuickLogGuided(catId, exId){
+  const st = stepperState[exId];
+  if(!st) return;
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  ex.history.push({ id: uid(), date: new Date().toISOString(), weight: st.weight, reps: st.reps, series: st.series });
+  guidedWorkoutLoggedSets.push({ weight: parseFloat(st.weight)||0, reps: parseInt(st.reps)||0, series: parseInt(st.series)||0 });
+  saveData();
+  render();
+  renderGuidedWorkoutStep();
+  showToast('Sesión registrada 💪');
+  startRestTimer();
+}
+
+function findSelBodyElements(exId){
+  const suffix = '_' + exId;
+  return Array.from(document.querySelectorAll('[id^="exBody_sel_"]')).filter(el=> el.id.endsWith(suffix));
+}
+
+function toggleSelect(catId, exId){
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  ex.selected = !ex.selected;
+  saveData();
+  catOpenState[catId] = true;
+  const wasCatOpen = document.getElementById('catBody_'+catId)?.classList.contains('open');
+  const wasExOpenAll = document.getElementById(`exBody_all_${exId}`)?.classList.contains('open');
+  const wasExOpenSelIds = findSelBodyElements(exId).filter(el=>el.classList.contains('open')).map(el=>el.id);
+  render();
+  if(wasCatOpen) document.getElementById('catBody_'+catId)?.classList.add('open');
+  if(wasExOpenAll) document.getElementById(`exBody_all_${exId}`)?.classList.add('open');
+  wasExOpenSelIds.forEach(id=> document.getElementById(id)?.classList.add('open'));
+}
+
+function toggleSelectInDay(catId, exId, dayId){
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  const dayIds = ex.dayIds || [];
+  if(dayId && dayIds.length > 1){
+    // Está en varios días: quitar solo este día, mantener el resto de la selección
+    ex.dayIds = dayIds.filter(id=>id!==dayId);
+    saveData();
+    render();
+    showToast('Quitado de ese día (sigue en tu selección en los demás)');
+    return;
+  }
+  // Es la única aparición: se comporta como quitar de toda la selección
+  toggleSelect(catId, exId);
+}
+
+let selDayOpenState = {};
+function toggleSelDay(bodyId){
+  const body = document.getElementById(bodyId);
+  const isOpen = body.classList.toggle('open');
+  selDayOpenState[bodyId] = isOpen;
+}
+
+let pendingDayAssignExId = null;
+let editingDayId = null;
+function openDayModal(){
+  editingDayId = null;
+  document.getElementById('dayModalTitle').textContent = 'Nuevo día';
+  document.getElementById('dayName').value = '';
+  new bootstrap.Modal(document.getElementById('dayModal')).show();
+}
+function openRenameDayModal(dayId){
+  const day = (data.days||[]).find(d=>d.id===dayId);
+  if(!day) return;
+  editingDayId = dayId;
+  document.getElementById('dayModalTitle').textContent = 'Renombrar día';
+  document.getElementById('dayName').value = day.name;
+  new bootstrap.Modal(document.getElementById('dayModal')).show();
+}
+function saveDay(){
+  const name = document.getElementById('dayName').value.trim();
+  if(!name){ showToast('Ponle un nombre al día'); return; }
+  if(!data.days) data.days = [];
+  if(!data.folders) data.folders = [];
+  if(!data.dayFolders) data.dayFolders = [];
+  if(!data.workoutSummaries) data.workoutSummaries = [];
+
+  if(editingDayId){
+    const day = data.days.find(d=>d.id===editingDayId);
+    if(day) day.name = name;
+    editingDayId = null;
+    saveData();
+    render();
+    bootstrap.Modal.getInstance(document.getElementById('dayModal')).hide();
+    showToast('Día renombrado');
+    return;
+  }
+
+  const newDay = { id: uid(), name };
+  data.days.push(newDay);
+  if(pendingDayAssignExId){
+    for(const cat of data.categories){
+      const ex = cat.exercises.find(e=>e.id===pendingDayAssignExId);
+      if(ex){
+        if(!ex.dayIds) ex.dayIds = [];
+        if(!ex.dayIds.includes(newDay.id)) ex.dayIds.push(newDay.id);
+        break;
+      }
+    }
+    pendingDayAssignExId = null;
+  }
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('dayModal')).hide();
+  showToast('Día creado y asignado');
+  if(dayAssignExId) openDayAssignModal(dayAssignExId);
+}
+function toggleDayForEx(exId, dayId){
+  for(const cat of data.categories){
+    const ex = cat.exercises.find(e=>e.id===exId);
+    if(ex){
+      if(!ex.dayIds) ex.dayIds = [];
+      const idx = ex.dayIds.indexOf(dayId);
+      if(idx === -1) ex.dayIds.push(dayId);
+      else ex.dayIds.splice(idx,1);
+      break;
+    }
+  }
+  saveData();
+  render();
+  renderDayAssignOptions();
+}
+function clearDaysForEx(exId){
+  for(const cat of data.categories){
+    const ex = cat.exercises.find(e=>e.id===exId);
+    if(ex){ ex.dayIds = []; break; }
+  }
+  saveData();
+  render();
+  renderDayAssignOptions();
+}
+
+let dayAssignExId = null;
+function openDayAssignModal(exId){
+  dayAssignExId = exId;
+  renderDayAssignOptions();
+  new bootstrap.Modal(document.getElementById('dayAssignModal')).show();
+}
+function renderDayAssignOptions(){
+  const container = document.getElementById('dayAssignOptions');
+  let ex = null;
+  for(const cat of data.categories){
+    const f = cat.exercises.find(e=>e.id===dayAssignExId);
+    if(f){ ex = f; break; }
+  }
+  const currentDayIds = ex ? (ex.dayIds || []) : [];
+  let html = `<button class="btn btn-ghost w-100 mb-2 text-start" onclick="clearDaysForEx('${dayAssignExId}')">${currentDayIds.length===0 ? '✓ ' : ''}Sin asignar (quitar de todos)</button>`;
+  (data.days||[]).forEach(d=>{
+    const checked = currentDayIds.includes(d.id);
+    html += `
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="btn ${checked ? 'btn-accent' : 'btn-ghost'} text-start" style="flex:1;" onclick="toggleDayForEx('${dayAssignExId}','${d.id}')">${checked ? '✓ ' : ''}${escapeHtml(d.name)}</button>
+        <button class="btn" style="background:var(--danger);color:#fff;flex:0 0 auto;" onclick="event.stopPropagation(); askDeleteDay('${d.id}')" title="Eliminar día">🗑️</button>
+      </div>`;
+  });
+  html += `<button class="btn btn-accent w-100 mt-1" onclick="chooseDayForEx('__new__')">➕ Crear nuevo día</button>
+    <p class="small-muted text-center mt-2 mb-0">Puedes marcar varios días a la vez para este ejercicio.</p>`;
+  container.innerHTML = html;
+}
+function askDeleteDay(dayId){
+  const day = (data.days||[]).find(d=>d.id===dayId);
+  if(!day) return;
+  document.getElementById('confirmText').textContent = `¿Eliminar el día "${day.name}"? Los ejercicios que lo tenían asignado se quedarán sin ese día.`;
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    data.categories.forEach(cat=>cat.exercises.forEach(ex=>{
+      if(ex.dayIds) ex.dayIds = ex.dayIds.filter(id=>id!==dayId);
+    }));
+    data.days = data.days.filter(d=>d.id!==dayId);
+    saveData();
+    modal.hide();
+    renderDayAssignOptions();
+    render();
+    showToast('Día eliminado');
+  };
+  modal.show();
+}
+
+/* ---------- CARPETAS DE DÍAS (Mi selección) ---------- */
+let dayFolderAssignDayId = null;
+let pendingDayFolderAssignDayId = null;
+let pendingNestParentForNewDayFolder = null;
+let nestDayFolderId = null;
+let editingDayFolderId = null;
+let currentDayFolderIcon = '🏋️';
+let currentDayFolderColor = null;
+let dayFolderOpenState = {};
+
+function selectDayFolderIcon(icon){
+  currentDayFolderIcon = icon;
+  document.getElementById('dayFolderIconGymBtn').classList.toggle('active', icon==='🏋️');
+  document.getElementById('dayFolderIconBookBtn').classList.toggle('active', icon==='📚');
+}
+function renderDayFolderColorSwatches(){
+  document.getElementById('dayFolderColorSwatches').innerHTML = buildColorSwatchesHtml(currentDayFolderColor, 'selectDayFolderColor');
+}
+function selectDayFolderColor(color){
+  currentDayFolderColor = color;
+  renderDayFolderColorSwatches();
+}
+function openDayFolderAssignModal(dayId){
+  dayFolderAssignDayId = dayId;
+  renderDayFolderAssignOptions();
+  new bootstrap.Modal(document.getElementById('dayFolderAssignModal')).show();
+}
+function renderDayFolderAssignOptions(){
+  const container = document.getElementById('dayFolderAssignOptions');
+  const day = (data.days||[]).find(d=>d.id===dayFolderAssignDayId);
+  const currentFolderId = day ? day.dayFolderId : null;
+  let html = `<button class="btn btn-ghost w-100 mb-2 text-start" onclick="chooseDayFolderForDay('')">${!currentFolderId ? '✓ ' : ''}Sin carpeta</button>`;
+  // Solo carpetas sin subcarpetas dentro: las carpetas "contenedoras" no admiten días directamente.
+  const leafFolders = (data.dayFolders||[]).filter(f => !(data.dayFolders||[]).some(cf=>cf.parentId===f.id));
+  leafFolders.forEach(f=>{
+    const checked = currentFolderId === f.id;
+    html += `
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button class="btn ${checked ? 'btn-accent' : 'btn-ghost'} text-start" style="flex:1;" onclick="chooseDayFolderForDay('${f.id}')">${checked ? '✓ ' : ''}${f.icon || '🏋️'} ${escapeHtml(f.name)}</button>
+        <button class="btn" style="background:var(--danger);color:#fff;flex:0 0 auto;" onclick="event.stopPropagation(); askDeleteDayFolder('${f.id}')" title="Eliminar carpeta">🗑️</button>
+      </div>`;
+  });
+  html += `<button class="btn btn-accent w-100 mt-1" onclick="createDayFolderForDay()">➕ Crear nueva carpeta</button>`;
+  container.innerHTML = html;
+}
+function chooseDayFolderForDay(folderId){
+  const day = (data.days||[]).find(d=>d.id===dayFolderAssignDayId);
+  if(day) day.dayFolderId = folderId || null;
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('dayFolderAssignModal')).hide();
+}
+function createDayFolderForDay(){
+  pendingDayFolderAssignDayId = dayFolderAssignDayId;
+  editingDayFolderId = null;
+  bootstrap.Modal.getInstance(document.getElementById('dayFolderAssignModal')).hide();
+  document.getElementById('dayFolderNameInput').value = '';
+  document.getElementById('dayFolderNameModalTitle').textContent = 'Nueva carpeta';
+  selectDayFolderIcon('🏋️');
+  currentDayFolderColor = null;
+  renderDayFolderColorSwatches();
+  new bootstrap.Modal(document.getElementById('dayFolderNameModal')).show();
+}
+function getDayFolderDescendantIds(folderId){
+  const ids = [];
+  function collect(id){
+    (data.dayFolders||[]).filter(f=>f.parentId===id).forEach(f=>{ ids.push(f.id); collect(f.id); });
+  }
+  collect(folderId);
+  return ids;
+}
+function openNestDayFolderModal(folderId){
+  nestDayFolderId = folderId;
+  renderNestDayFolderOptions();
+  new bootstrap.Modal(document.getElementById('nestDayFolderModal')).show();
+}
+function renderNestDayFolderOptions(){
+  const container = document.getElementById('nestDayFolderOptions');
+  const folder = (data.dayFolders||[]).find(f=>f.id===nestDayFolderId);
+  const currentParentId = folder ? folder.parentId : null;
+  const excluded = new Set([nestDayFolderId, ...getDayFolderDescendantIds(nestDayFolderId)]);
+  let html = `<button class="btn btn-ghost w-100 mb-2 text-start" onclick="chooseNestParent('')">${!currentParentId ? '✓ ' : ''}Carpeta principal (sin carpeta superior)</button>`;
+  // Solo carpetas principales (sin padre) pueden hacer de carpeta superior: como mucho 2 niveles.
+  (data.dayFolders||[]).filter(f=>!f.parentId).forEach(f=>{
+    if(excluded.has(f.id)) return;
+    const checked = currentParentId === f.id;
+    html += `<button class="btn ${checked ? 'btn-accent' : 'btn-ghost'} w-100 mb-2 text-start" onclick="chooseNestParent('${f.id}')">${checked ? '✓ ' : ''}${f.icon || '🏋️'} ${escapeHtml(f.name)}</button>`;
+  });
+  html += `<button class="btn btn-accent w-100 mt-1" onclick="createParentDayFolder()">➕ Crear nueva carpeta superior</button>`;
+  container.innerHTML = html;
+}
+function chooseNestParent(parentId){
+  const folder = (data.dayFolders||[]).find(f=>f.id===nestDayFolderId);
+  if(folder) folder.parentId = parentId || null;
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('nestDayFolderModal')).hide();
+}
+function createParentDayFolder(){
+  pendingNestParentForNewDayFolder = nestDayFolderId;
+  editingDayFolderId = null;
+  bootstrap.Modal.getInstance(document.getElementById('nestDayFolderModal')).hide();
+  document.getElementById('dayFolderNameInput').value = '';
+  document.getElementById('dayFolderNameModalTitle').textContent = 'Nueva carpeta superior';
+  selectDayFolderIcon('🏋️');
+  currentDayFolderColor = null;
+  renderDayFolderColorSwatches();
+  new bootstrap.Modal(document.getElementById('dayFolderNameModal')).show();
+}
+function openRenameDayFolderModal(folderId){
+  const f = (data.dayFolders||[]).find(x=>x.id===folderId);
+  if(!f) return;
+  editingDayFolderId = folderId;
+  pendingDayFolderAssignDayId = null;
+  document.getElementById('dayFolderNameInput').value = f.name;
+  document.getElementById('dayFolderNameModalTitle').textContent = 'Renombrar carpeta';
+  selectDayFolderIcon(f.icon || '🏋️');
+  currentDayFolderColor = f.color || null;
+  renderDayFolderColorSwatches();
+  new bootstrap.Modal(document.getElementById('dayFolderNameModal')).show();
+}
+function saveDayFolderName(){
+  const name = document.getElementById('dayFolderNameInput').value.trim();
+  if(!name){ showToast('Ponle un nombre a la carpeta'); return; }
+  if(!data.dayFolders) data.dayFolders = [];
+  if(!data.workoutSummaries) data.workoutSummaries = [];
+  if(editingDayFolderId){
+    const f = data.dayFolders.find(x=>x.id===editingDayFolderId);
+    if(f){ f.name = name; f.icon = currentDayFolderIcon; f.color = currentDayFolderColor; }
+  } else {
+    const newFolder = { id: uid(), name, icon: currentDayFolderIcon, color: currentDayFolderColor };
+    data.dayFolders.push(newFolder);
+    if(pendingDayFolderAssignDayId){
+      const day = (data.days||[]).find(d=>d.id===pendingDayFolderAssignDayId);
+      if(day) day.dayFolderId = newFolder.id;
+      pendingDayFolderAssignDayId = null;
+    }
+    if(pendingNestParentForNewDayFolder){
+      const child = (data.dayFolders||[]).find(f=>f.id===pendingNestParentForNewDayFolder);
+      if(child) child.parentId = newFolder.id;
+      pendingNestParentForNewDayFolder = null;
+    }
+  }
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('dayFolderNameModal')).hide();
+  showToast(editingDayFolderId ? 'Carpeta renombrada' : 'Carpeta creada');
+}
+function askDeleteDayFolder(folderId){
+  const f = (data.dayFolders||[]).find(x=>x.id===folderId);
+  if(!f) return;
+  document.getElementById('confirmText').textContent = `¿Eliminar la carpeta "${f.name}"? Los días que contiene no se borran, solo quedan sueltos.`;
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    (data.days||[]).forEach(d=>{ if(d.dayFolderId===folderId) d.dayFolderId = null; });
+    (data.dayFolders||[]).forEach(cf=>{ if(cf.parentId===folderId) cf.parentId = null; });
+    data.dayFolders = data.dayFolders.filter(x=>x.id!==folderId);
+    saveData();
+    modal.hide();
+    render();
+    if(document.getElementById('dayFolderAssignOptions')) renderDayFolderAssignOptions();
+    showToast('Carpeta eliminada');
+  };
+  modal.show();
+}
+function toggleDayFolder(folderId){
+  const body = document.getElementById('dayFolderBody_'+folderId);
+  const isOpen = body.classList.toggle('open');
+  dayFolderOpenState[folderId] = isOpen;
+}
+function buildDayFolderCard(folder, dayCount, totalItems){
+  const card = document.createElement('div');
+  card.className = 'cat-card';
+  card.dataset.dayFolderId = folder.id;
+  card.style.borderLeft = `3px solid ${folder.color || folderAccentColor(folder.id)}`;
+  const bodyId = 'dayFolderBody_' + folder.id;
+  const shouldBeOpen = dayFolderOpenState.hasOwnProperty(folder.id) ? dayFolderOpenState[folder.id] : false;
+  const dayFolderHandle = data.locked ? '' : `<div class="drag-handle" onpointerdown="dayFolderDragStart(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar carpetas">⠿</div>`;
+  const hasChildFolders = (data.dayFolders||[]).some(cf=>cf.parentId===folder.id);
+  const nestBtn = (data.locked || hasChildFolders) ? '' : `<button onclick="event.stopPropagation(); openNestDayFolderModal('${folder.id}')" title="Meter dentro de otra carpeta">📁</button>`;
+  const editBtn = data.locked ? '' : `<button onclick="event.stopPropagation(); openRenameDayFolderModal('${folder.id}')" title="Renombrar carpeta">✏️</button>`;
+  const deleteBtn = data.locked ? '' : `<button class="icon-btn danger" onclick="event.stopPropagation(); askDeleteDayFolder('${folder.id}')" title="Eliminar carpeta">🗑️</button>`;
+  card.innerHTML = `
+    <div class="cat-header" onclick="toggleDayFolder('${folder.id}')">
+      ${dayFolderHandle}
+      <div class="cat-title" style="flex:1;">${folder.icon || '🏋️'} ${escapeHtml(folder.name)} <span class="cat-count">${dayCount} días · ${totalItems}</span></div>
+      <div onclick="event.stopPropagation()">${nestBtn}${editBtn}${deleteBtn}</div>
+    </div>
+    <div class="cat-body${shouldBeOpen ? ' open' : ''}" id="${bodyId}"></div>
+  `;
+  return { card, bodyId };
+}
+
+function chooseDayForEx(value){
+  if(value === '__new__'){
+    pendingDayAssignExId = dayAssignExId;
+    bootstrap.Modal.getInstance(document.getElementById('dayAssignModal')).hide();
+    openDayModal();
+    return;
+  }
+}
+
+function renderSelected(){
+  const container = document.getElementById('selectedList');
+  container.innerHTML = '';
+  const items = getSelectedExercises();
+  const badge = document.getElementById('selCount');
+  if(items.length){
+    badge.textContent = items.length;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Agrupar por día asignado (un ejercicio puede estar en varios días a la vez)
+  const groups = [];
+  (data.days||[]).forEach(day=>{
+    const dayItems = items.filter(it=> (it.ex.dayIds||[]).includes(day.id));
+    if(dayItems.length) groups.push({ bodyId: 'dayBody_'+day.id, dayId: day.id, name: '🗓️ '+day.name, items: dayItems, dayFolderId: day.dayFolderId || null });
+  });
+  const unassigned = items.filter(it=> !it.ex.dayIds || it.ex.dayIds.length===0);
+  if(unassigned.length) groups.push({ bodyId: 'dayBody_none', dayId: null, name: 'Sin día asignado', items: unassigned, dayFolderId: null });
+
+  function renderDayGroup(group, targetContainer){
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    if(group.dayId) card.dataset.dayId = group.dayId;
+    const shouldBeOpen = selDayOpenState.hasOwnProperty(group.bodyId) ? selDayOpenState[group.bodyId] : false;
+    const dayHandle = (group.dayId && !data.locked) ? `<div class="drag-handle" onpointerdown="dayDragStart(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar">⠿</div>` : '';
+    const dayFolderBtn = (group.dayId && !data.locked) ? `<button class="icon-btn" onclick="event.stopPropagation(); openDayFolderAssignModal('${group.dayId}')" title="Mover a carpeta">📁</button>` : '';
+    const dayEditBtn = (group.dayId && !data.locked) ? `<button class="icon-btn" onclick="event.stopPropagation(); openRenameDayModal('${group.dayId}')" title="Renombrar día">✏️</button>` : '';
+    const dayDeleteBtn = (group.dayId && !data.locked) ? `<button class="icon-btn danger" onclick="event.stopPropagation(); askDeleteDay('${group.dayId}')" title="Eliminar este día">🗑️</button>` : '';
+    const dayStartBtn = group.dayId ? `<button class="icon-btn" onclick="event.stopPropagation(); startGuidedWorkout('${group.dayId}')" title="Empezar entrenamiento guiado">▶</button>` : '';
+    const dayHistoryBtn = group.dayId ? `<button class="icon-btn" onclick="event.stopPropagation(); openWorkoutHistoryModal('${group.dayId}')" title="Historial de entrenamientos">📊</button>` : '';
+    card.innerHTML = `
+      <div class="cat-header" onclick="toggleSelDay('${group.bodyId}')">
+        ${dayHandle}
+        <div class="cat-title" style="flex:1;">${escapeHtml(group.name)} <span class="cat-count">${group.items.length}</span></div>
+        ${dayStartBtn}
+        ${dayHistoryBtn}
+        ${dayFolderBtn}
+        ${dayEditBtn}
+        ${dayDeleteBtn}
+      </div>
+      <div class="cat-body${shouldBeOpen ? ' open' : ''}" id="${group.bodyId}"></div>
+    `;
+    targetContainer.appendChild(card);
+    const dayBody = document.getElementById(group.bodyId);
+
+    if(group.dayId){
+      // Lista plana dentro del día: se pueden mezclar ejercicios de cualquier categoría
+      // en el orden que se quiera (cada uno muestra de qué categoría viene).
+      const day = (data.days||[]).find(d=>d.id===group.dayId);
+      const orderedItems = getDayOrderedItems(day, group.items);
+      const instId = 'sel_' + group.bodyId;
+      orderedItems.forEach(({cat, ex})=>{
+        const item = document.createElement('div');
+        item.className = 'ex-item';
+        item.dataset.exId = ex.id;
+        item.dataset.catId = cat.id;
+        item.dataset.dayId = group.dayId;
+        item.innerHTML = buildExerciseItemHTML(cat, ex, true, instId, group.dayId, true);
+        dayBody.appendChild(item);
+        renderExDetail(cat, ex, instId);
+      });
+    } else {
+      // Sin día asignado: se mantiene agrupado por categoría
+      const catMap = new Map();
+      group.items.forEach(({cat, ex})=>{
+        if(!catMap.has(cat.id)) catMap.set(cat.id, { cat, exercises: [] });
+        catMap.get(cat.id).exercises.push(ex);
+      });
+
+      catMap.forEach(sub=>{
+        const subBodyId = group.bodyId+'_cat_'+sub.cat.id;
+        const subOpen = selDayOpenState.hasOwnProperty(subBodyId) ? selDayOpenState[subBodyId] : false;
+        const subCard = document.createElement('div');
+        subCard.className = 'ex-item';
+        subCard.dataset.catId = sub.cat.id;
+        const subHandle = data.locked ? '' : `<div class="drag-handle" onpointerdown="subCatDragStart(event, this)" onclick="event.stopPropagation()" title="Mantén pulsado y arrastra para reordenar">⠿</div>`;
+        subCard.innerHTML = `
+          <div class="ex-header" onclick="toggleSelDay('${subBodyId}')">
+            ${subHandle}
+            <div class="ex-name" style="flex:1;">${sub.cat.type==='photos' ? '📷 ' : ''}${escapeHtml(sub.cat.name)} <span class="cat-count">${sub.exercises.length}</span></div>
+          </div>
+          <div class="ex-body${subOpen ? ' open' : ''}" id="${subBodyId}"></div>
+        `;
+        dayBody.appendChild(subCard);
+        const subBody = document.getElementById(subBodyId);
+        sub.exercises.forEach(ex=>{
+          const instId = 'sel_' + group.bodyId;
+          const item = document.createElement('div');
+          item.className = 'ex-item';
+          item.dataset.exId = ex.id;
+          item.dataset.catId = sub.cat.id;
+          item.innerHTML = buildExerciseItemHTML(sub.cat, ex, false, instId, group.dayId);
+          subBody.appendChild(item);
+          renderExDetail(sub.cat, ex, instId);
+        });
+      });
+    }
+  }
+
+  // Primero las carpetas de días (admiten carpetas dentro de carpetas), en su propio orden; luego los días sueltos.
+  function dayFolderHasContent(folder){
+    if(groups.some(g=>g.dayFolderId===folder.id)) return true;
+    return (data.dayFolders||[]).filter(f=>f.parentId===folder.id).some(dayFolderHasContent);
+  }
+  function countDayFolderContents(folder){
+    const direct = groups.filter(g=>g.dayFolderId===folder.id);
+    let dayCount = direct.length;
+    let itemCount = direct.reduce((s,g)=> s+g.items.length, 0);
+    (data.dayFolders||[]).filter(f=>f.parentId===folder.id).forEach(child=>{
+      const sub = countDayFolderContents(child);
+      dayCount += sub.dayCount;
+      itemCount += sub.itemCount;
+    });
+    return { dayCount, itemCount };
+  }
+  const renderedDayFolders = new Set();
+  function renderDayFolderNode(folder, targetContainer){
+    if(!dayFolderHasContent(folder)) return;
+    renderedDayFolders.add(folder.id);
+    const { dayCount, itemCount } = countDayFolderContents(folder);
+    const folderInfo = buildDayFolderCard(folder, dayCount, itemCount);
+    targetContainer.appendChild(folderInfo.card);
+    const folderBody = document.getElementById(folderInfo.bodyId);
+    (data.dayFolders||[]).filter(f=>f.parentId===folder.id).forEach(child=> renderDayFolderNode(child, folderBody));
+    groups.filter(g=>g.dayFolderId===folder.id).forEach(group=> renderDayGroup(group, folderBody));
+  }
+  (data.dayFolders||[]).filter(f=>!f.parentId).forEach(folder=> renderDayFolderNode(folder, container));
+  groups.forEach(group=>{
+    if(group.dayFolderId && renderedDayFolders.has(group.dayFolderId)) return; // ya renderizado dentro de su carpeta
+    renderDayGroup(group, container);
+  });
+}
+
+let currentTab = 'all';
+function switchTab(tab){
+  currentTab = tab;
+  document.getElementById('tabAllBtn').classList.toggle('active', tab==='all');
+  document.getElementById('tabSelBtn').classList.toggle('active', tab==='selected');
+  const hasCats = data.categories.length > 0;
+  document.getElementById('catList').style.display = (tab==='all') ? 'block' : 'none';
+  document.getElementById('emptyState').style.display = (tab==='all' && !hasCats) ? 'block' : 'none';
+  const selCount = getSelectedExercises().length;
+  document.getElementById('selectedList').style.display = (tab==='selected') ? 'block' : 'none';
+  document.getElementById('selectedEmpty').style.display = (tab==='selected' && selCount===0) ? 'block' : 'none';
+  document.getElementById('weeklyChartPanel').style.display = (tab==='selected' && selCount>0) ? 'block' : 'none';
+  document.getElementById('mainFab').style.display = (tab==='all') ? 'flex' : 'none';
+  if(tab==='selected' && selCount>0){ renderWeeklyChart(); renderTodaySummary(); if(historicalWeeksOpen) renderHistoricalWeeks(); }
+}
+
+/* ---------- GRÁFICO DE PROGRESO SEMANAL ---------- */
+function getMondayOfWeek(d){
+  const date = new Date(d);
+  const day = date.getDay(); // 0 domingo ... 6 sábado
+  const diff = (day===0 ? -6 : 1-day);
+  date.setDate(date.getDate()+diff);
+  date.setHours(0,0,0,0);
+  return date;
+}
+function computeWeeklyVolume(weekOffset){
+  const base = new Date();
+  base.setDate(base.getDate() + (weekOffset||0)*7);
+  const monday = getMondayOfWeek(base);
+  const days = [];
+  for(let i=0;i<7;i++){
+    const d = new Date(monday);
+    d.setDate(monday.getDate()+i);
+    days.push(d);
+  }
+  const volumes = days.map(()=>0);
+  data.categories.forEach(cat=>{
+    cat.exercises.forEach(ex=>{
+      if(!ex.selected) return;
+      ex.history.forEach(h=>{
+        const hd = new Date(h.date);
+        hd.setHours(0,0,0,0);
+        const idx = days.findIndex(d=> d.getTime()===hd.getTime());
+        if(idx!==-1){
+          volumes[idx] += (parseFloat(h.weight)||0) * (parseInt(h.reps)||0) * (parseInt(h.series)||0);
+        }
+      });
+    });
+  });
+  return { days, volumes };
+}
+function computeTodaySummary(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  let tonnage = 0, series = 0, sessionCount = 0;
+  data.categories.forEach(cat=>{
+    cat.exercises.forEach(ex=>{
+      if(!ex.selected) return;
+      ex.history.forEach(h=>{
+        const hd = new Date(h.date); hd.setHours(0,0,0,0);
+        if(hd.getTime() === today.getTime()){
+          const w = parseFloat(h.weight)||0;
+          const r = parseInt(h.reps)||0;
+          const s = parseInt(h.series)||0;
+          tonnage += w*r*s;
+          series += s;
+          sessionCount++;
+        }
+      });
+    });
+  });
+  return { tonnage, series, sessionCount };
+}
+function renderTodaySummary(){
+  const card = document.getElementById('todaySummaryCard');
+  const text = document.getElementById('todaySummaryText');
+  const { tonnage, series, sessionCount } = computeTodaySummary();
+  if(sessionCount === 0){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  text.textContent = `🔥 Hoy moviste ${Math.round(tonnage).toLocaleString('es-ES')} kg en ${series} series`;
+}
+
+/* ---------- HISTÓRICO DE SEMANAS (hasta 1 año) ---------- */
+let historicalWeeksOpen = false;
+function toggleWeeklyFolder(){
+  document.getElementById('weeklyFolderBody').classList.toggle('open');
+}
+function toggleHistoricalWeeks(){
+  historicalWeeksOpen = !historicalWeeksOpen;
+  document.getElementById('historicalWeeksWrap').style.display = historicalWeeksOpen ? 'block' : 'none';
+  document.getElementById('histToggleBtn').textContent = historicalWeeksOpen ? '📈 Ocultar histórico' : '📈 Ver histórico de semanas';
+  if(historicalWeeksOpen) renderHistoricalWeeks();
+}
+function renderHistoricalWeeks(){
+  const row = document.getElementById('historicalWeeksRow');
+  if(!row) return;
+  const numWeeks = 52; // hasta 1 año
+  const weeks = [];
+  for(let i=numWeeks-1; i>=0; i--){
+    const { days, volumes } = computeWeeklyVolume(-i);
+    const total = volumes.reduce((a,b)=>a+b,0);
+    weeks.push({ start: days[0], total });
+  }
+  const maxVal = Math.max(...weeks.map(w=>w.total), 1);
+  const thisMonday = getMondayOfWeek(new Date());
+
+  row.innerHTML = weeks.map(w=>{
+    const h = Math.max(3, Math.round((w.total/maxVal)*90));
+    const isCurrent = w.start.getTime() === thisMonday.getTime();
+    return `<div class="hist-week-col" title="Semana del ${fmtShortDate(w.start)}: ${Math.round(w.total)} kg">
+      <div class="hist-week-bar${isCurrent ? ' is-current' : ''}" style="height:${h}px;"></div>
+    </div>`;
+  }).join('');
+
+  const weeksWithData = weeks.filter(w=>w.total>0);
+  const summaryEl = document.getElementById('histSummary');
+  if(weeksWithData.length === 0){
+    summaryEl.textContent = 'Todavía no hay suficiente historial para comparar.';
+  } else {
+    const best = weeksWithData.reduce((a,b)=> b.total>a.total ? b : a);
+    const thisWeek = weeks[weeks.length-1];
+    summaryEl.textContent = `Mejor semana: ${fmtShortDate(best.start)} con ${Math.round(best.total).toLocaleString('es-ES')} kg — esta semana llevas ${Math.round(thisWeek.total).toLocaleString('es-ES')} kg.`;
+  }
+}
+let currentWeekOffset = 0;
+function weekPrev(){
+  currentWeekOffset--;
+  renderWeeklyChart();
+}
+function weekNext(){
+  if(currentWeekOffset >= 0) return;
+  currentWeekOffset++;
+  renderWeeklyChart();
+}
+function fmtShortDate(d){
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function renderWeeklyChart(){
+  const canvas = document.getElementById('weeklyChartCanvas');
+  if(!canvas) return;
+  const dayNames = ['L','M','X','J','V','S','D'];
+  const { days, volumes } = computeWeeklyVolume(currentWeekOffset);
+  const total = volumes.reduce((a,b)=>a+b,0);
+
+  document.getElementById('weekRangeLabel').textContent = `${fmtShortDate(days[0])} - ${fmtShortDate(days[6])}`;
+  document.getElementById('weekNextBtn').disabled = currentWeekOffset >= 0;
+  document.getElementById('weekNextBtn').style.opacity = currentWeekOffset >= 0 ? .35 : 1;
+
+  const weekLabel = currentWeekOffset === 0 ? 'esta semana' : 'esa semana';
+  document.getElementById('weeklyTotal').textContent = total>0
+    ? `${Math.round(total).toLocaleString('es-ES')} kg movidos ${weekLabel} (ejercicios de tu selección)`
+    : `Sin sesiones ${weekLabel} en tu selección`;
+
+  const cssWidth = Math.max(canvas.parentElement.clientWidth - 4, 260);
+  canvas.width = cssWidth;
+  canvas.height = 160;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const maxVol = Math.max(...volumes, 1);
+  const gap = 10;
+  const barCount = 7;
+  const chartW = canvas.width - 20;
+  const barW = (chartW - gap*(barCount-1)) / barCount;
+  const chartH = 108;
+  const baseY = 128;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  volumes.forEach((vol, i)=>{
+    const barH = maxVol>0 ? (vol/maxVol)*chartH : 0;
+    const x = 10 + i*(barW+gap);
+    const y = baseY - barH;
+    const isToday = days[i].getTime() === today.getTime();
+    ctx.fillStyle = isToday ? '#ff6a3d' : '#2e3340';
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x, y, barW, Math.max(barH,2), 4);
+    else ctx.rect(x, y, barW, Math.max(barH,2));
+    ctx.fill();
+
+    ctx.fillStyle = '#8b93a3';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(dayNames[i], x+barW/2, baseY+16);
+
+    if(vol>0){
+      ctx.fillStyle = '#e9eaec';
+      ctx.font = '10px sans-serif';
+      ctx.fillText(Math.round(vol), x+barW/2, Math.max(y-4, 10));
+    }
+  });
+}
+
+function renderExerciseChart(canvasId, history){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const sorted = [...history].sort((a,b)=> new Date(a.date)-new Date(b.date));
+  const weights = sorted.map(h=> parseFloat(h.weight)||0);
+
+  const cssWidth = Math.max((canvas.parentElement.clientWidth || 260) - 4, 200);
+  canvas.width = cssWidth;
+  canvas.height = 90;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const maxW = Math.max(...weights);
+  const minW = Math.min(...weights);
+  const range = (maxW - minW) || 1;
+  const padX = 12, padTop = 16, padBottom = 16;
+  const chartW = canvas.width - padX*2;
+  const chartH = canvas.height - padTop - padBottom;
+  const stepX = weights.length>1 ? chartW/(weights.length-1) : 0;
+
+  const points = weights.map((w,i)=>({
+    x: padX + i*stepX,
+    y: padTop + chartH - ((w-minW)/range)*chartH
+  }));
+
+  ctx.beginPath();
+  points.forEach((p,i)=>{ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+  ctx.strokeStyle = '#ff6a3d';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  points.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+    ctx.fillStyle = '#ff6a3d';
+    ctx.fill();
+  });
+
+  ctx.fillStyle = '#8b93a3';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(maxW+'kg', 2, 10);
+  ctx.fillText(minW+'kg', 2, canvas.height-4);
+}
+
+function toggleEx(exId, inst){
+  const body = document.getElementById(`exBody_${inst}_${exId}`);
+  if(!body) return;
+  body.classList.toggle('open');
+  exOpenState[`${inst}_${exId}`] = body.classList.contains('open');
+  if(body.classList.contains('open')){
+    const canvas = body.querySelector('canvas[id^="chart_"]');
+    if(canvas){
+      const found = findExById(exId);
+      if(found) renderExerciseChart(canvas.id, found.ex.history);
+    }
+  }
+}
+
+function buildExDetailFullHtml(cat, ex, inst, confirmOnclick){
+  const last = ex.history.length ? ex.history[ex.history.length-1] : null;
+  if(!stepperState[ex.id]){
+    stepperState[ex.id] = {
+      series: last ? parseInt(last.series)||3 : 3,
+      reps: last ? parseInt(last.reps)||10 : 10,
+      weight: last ? parseFloat(last.weight)||0 : 0
+    };
+  }
+  const st = stepperState[ex.id];
+
+  const photoHtml = buildPhotoGalleryHtml(ex, data.locked, inst);
+
+  const sorted = [...ex.history].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const bestWeight = ex.history.length ? Math.max(...ex.history.map(h=>parseFloat(h.weight)||0)) : 0;
+
+  let rows = sorted.map((h,idx)=>{
+    const isPR = parseFloat(h.weight) === bestWeight && bestWeight>0;
+    return `
+      <tr>
+        <td>${fmtDate(h.date)}</td>
+        <td>${h.weight}kg${isPR ? ' <span class="pr-badge">PR</span>':''}</td>
+        <td>${h.reps}</td>
+        <td>${h.series}</td>
+        <td><button class="icon-btn danger" onclick="deleteSession('${cat.id}','${ex.id}','${h.id}','${inst}')">🗑️</button></td>
+      </tr>`;
+  }).join('');
+
+  const chartId = `chart_${inst}_${ex.id}`;
+  const chartHtml = ex.history.length >= 2 ? `
+    <div class="ex-chart-wrap">
+      <div class="small-muted" style="margin-bottom:4px;">📈 Progresión de peso</div>
+      <canvas id="${chartId}" style="width:100%;height:90px;display:block;"></canvas>
+    </div>` : '';
+
+  return `
+    <div class="ex-last">${last ? `Último: ${last.weight}kg × ${last.reps} × ${last.series}s — ${fmtDate(last.date)}` : 'Sin registros'}</div>
+    ${chartHtml}
+    ${photoHtml}
+    <div class="ex-quicklog">
+      <div class="stepper">
+        <span class="stepper-label">Series</span>
+        <button onclick="stepChange('${ex.id}','series',1,'${inst}')">▲</button>
+        <div class="stepper-value" id="stv_series_${inst}_${ex.id}">${st.series}</div>
+        <button onclick="stepChange('${ex.id}','series',-1,'${inst}')">▼</button>
+      </div>
+      <div class="stepper">
+        <span class="stepper-label">Reps</span>
+        <button onclick="stepChange('${ex.id}','reps',1,'${inst}')">▲</button>
+        <div class="stepper-value" id="stv_reps_${inst}_${ex.id}">${st.reps}</div>
+        <button onclick="stepChange('${ex.id}','reps',-1,'${inst}')">▼</button>
+      </div>
+      <div class="stepper">
+        <span class="stepper-label">Kg</span>
+        <button onclick="stepChange('${ex.id}','weight',1,'${inst}')">▲</button>
+        <div class="stepper-value" id="stv_weight_${inst}_${ex.id}">${st.weight}</div>
+        <button onclick="stepChange('${ex.id}','weight',-1,'${inst}')">▼</button>
+      </div>
+      <button class="quicklog-confirm" onclick="${confirmOnclick}" title="Guardar sesión">✔</button>
+      <button class="icon-btn" onclick="startRestTimer()" title="Activar el descanso sin registrar nada" style="align-self:center;">⏱️</button>
+    </div>
+    ${ex.history.length ? `
+    <table class="hist-table">
+      <thead><tr><th>Fecha</th><th>Peso</th><th>Reps</th><th>Series</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>` : '<p class="small-muted">Todavía no hay sesiones registradas.</p>'}
+    ${buildNotesButtonHtml(ex)}
+  `;
+}
+
+function buildExDetailPhotosHtml(ex, inst){
+  const emptyMsg = (ex.photoIds||[]).length===0 ? '<p class="small-muted text-center py-2">Sin fotos todavía.</p>' : '';
+  return emptyMsg + buildPhotoGalleryHtml(ex, data.locked, inst) + buildNotesButtonHtml(ex);
+}
+
+function renderExDetail(cat, ex, inst){
+  const body = document.getElementById(`exBody_${inst}_${ex.id}`);
+  if(!body) return;
+
+  if(cat.type === 'photos'){
+    body.innerHTML = buildExDetailPhotosHtml(ex, inst);
+    return;
+  }
+
+  if(inst === 'all'){
+    const photoHtmlAll = buildPhotoGalleryHtml(ex, data.locked, inst);
+    body.innerHTML = `${photoHtmlAll}${buildNotesButtonHtml(ex)}`;
+    return;
+  }
+
+  const confirmOnclick = `confirmQuickLog('${cat.id}','${ex.id}','${inst}')`;
+  body.innerHTML = buildExDetailFullHtml(cat, ex, inst, confirmOnclick);
+
+  if(ex.history.length >= 2) renderExerciseChart(`chart_${inst}_${ex.id}`, ex.history);
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ---------- CATEGORÍAS ---------- */
+let currentCatType = 'exercises';
+function selectCatType(type){
+  currentCatType = type;
+  document.getElementById('typeExercisesBtn').classList.toggle('active', type==='exercises');
+  document.getElementById('typePhotosBtn').classList.toggle('active', type==='photos');
+}
+function openCatModal(catId){
+  editingCatId = catId || null;
+  document.getElementById('catModalTitle').textContent = catId ? 'Editar categoría' : 'Nueva categoría';
+  document.getElementById('catName').value = '';
+  selectCatType('exercises');
+  if(catId){
+    const cat = data.categories.find(c=>c.id===catId);
+    if(cat){
+      document.getElementById('catName').value = cat.name;
+      selectCatType(cat.type || 'exercises');
+    }
+  }
+  new bootstrap.Modal(document.getElementById('catModal')).show();
+}
+function saveCat(){
+  const name = document.getElementById('catName').value.trim();
+  if(!name){ showToast('Ponle un nombre a la categoría'); return; }
+  if(editingCatId){
+    const cat = data.categories.find(c=>c.id===editingCatId);
+    if(cat){ cat.name = name; cat.type = currentCatType; }
+  } else {
+    data.categories.push({ id: uid(), name, type: currentCatType, exercises: [] });
+  }
+  saveData();
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('catModal')).hide();
+  showToast('Categoría guardada');
+}
+function askDeleteCat(catId){
+  const cat = data.categories.find(c=>c.id===catId);
+  document.getElementById('confirmText').textContent = `¿Eliminar la categoría "${cat.name}" y todos sus ejercicios?`;
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    (cat.exercises || []).forEach(ex=> (ex.photoIds||[]).forEach(pid=> dbDeletePhoto(pid).catch(()=>{})));
+    data.categories = data.categories.filter(c=>c.id!==catId);
+    saveData(); render(); modal.hide(); showToast('Categoría eliminada');
+  };
+  modal.show();
+}
+
+/* ---------- REORDENAR CATEGORÍAS (arrastrar y soltar) ---------- */
+let dragCard = null;
+let dragHandleEl = null;
+let dragCatId = null;
+let dragStartY = 0;
+
+function catDragStart(e, handle){
+  e.preventDefault();
+  const card = handle.closest('.cat-card');
+  if(!card) return;
+  dragCard = card;
+  dragHandleEl = handle;
+  dragCatId = card.dataset.catId;
+  dragStartY = e.clientY;
+  card.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', catDragMove);
+  handle.addEventListener('pointerup', catDragEnd);
+  handle.addEventListener('pointercancel', catDragEnd);
+}
+
+function catDragMove(e){
+  if(!dragCard) return;
+  const deltaY = e.clientY - dragStartY;
+  dragCard.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragCard.parentElement;
+  const siblings = Array.from(parent.children).filter(el=>el.classList.contains('cat-card'));
+  const dragIndex = siblings.indexOf(dragCard);
+  const draggedRect = dragCard.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragCard.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragCard, target.el);
+    else parent.insertBefore(dragCard, target.el.nextSibling);
+
+    const dragIdxData = data.categories.findIndex(c=>c.id===dragCatId);
+    const targetIdxData = data.categories.findIndex(c=>c.id===target.el.dataset.catId);
+    if(dragIdxData !== -1 && targetIdxData !== -1){
+      const [moved] = data.categories.splice(dragIdxData,1);
+      data.categories.splice(targetIdxData,0,moved);
+    }
+
+    // corregir el transform para que no haya salto visual al reordenar
+    dragCard.style.transform = 'none';
+    const newNaturalRect = dragCard.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragStartY = e.clientY - neededTy;
+    dragCard.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+
+function catDragEnd(e){
+  if(!dragCard) return;
+  const handle = dragHandleEl;
+  handle.removeEventListener('pointermove', catDragMove);
+  handle.removeEventListener('pointerup', catDragEnd);
+  handle.removeEventListener('pointercancel', catDragEnd);
+  dragCard.classList.remove('dragging');
+  dragCard.style.transform = '';
+  dragCard = null;
+  dragHandleEl = null;
+  dragCatId = null;
+  saveData();
+  render();
+}
+
+/* ---------- REORDENAR CARPETAS DE CATEGORÍAS (arrastrar y soltar) ---------- */
+let dragFolderCard = null;
+let dragFolderHandleEl = null;
+let dragFolderId = null;
+let dragFolderStartY = 0;
+
+function folderDragStart(e, handle){
+  e.preventDefault();
+  const card = handle.closest('.cat-card');
+  if(!card) return;
+  dragFolderCard = card;
+  dragFolderHandleEl = handle;
+  dragFolderId = card.dataset.folderId;
+  dragFolderStartY = e.clientY;
+  card.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', folderDragMove);
+  handle.addEventListener('pointerup', folderDragEnd);
+  handle.addEventListener('pointercancel', folderDragEnd);
+}
+function folderDragMove(e){
+  if(!dragFolderCard) return;
+  const deltaY = e.clientY - dragFolderStartY;
+  dragFolderCard.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragFolderCard.parentElement;
+  const siblings = Array.from(parent.children).filter(el=> el.classList.contains('cat-card') && el.dataset.folderId);
+  const dragIndex = siblings.indexOf(dragFolderCard);
+  const draggedRect = dragFolderCard.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragFolderCard.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragFolderCard, target.el);
+    else parent.insertBefore(dragFolderCard, target.el.nextSibling);
+
+    const dragIdxData = data.folders.findIndex(f=>f.id===dragFolderId);
+    const targetIdxData = data.folders.findIndex(f=>f.id===target.el.dataset.folderId);
+    if(dragIdxData !== -1 && targetIdxData !== -1){
+      const [moved] = data.folders.splice(dragIdxData,1);
+      data.folders.splice(targetIdxData,0,moved);
+    }
+
+    dragFolderCard.style.transform = 'none';
+    const newNaturalRect = dragFolderCard.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragFolderStartY = e.clientY - neededTy;
+    dragFolderCard.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+function folderDragEnd(e){
+  if(!dragFolderCard) return;
+  const handle = dragFolderHandleEl;
+  handle.removeEventListener('pointermove', folderDragMove);
+  handle.removeEventListener('pointerup', folderDragEnd);
+  handle.removeEventListener('pointercancel', folderDragEnd);
+  dragFolderCard.classList.remove('dragging');
+  dragFolderCard.style.transform = '';
+  dragFolderCard = null;
+  dragFolderHandleEl = null;
+  dragFolderId = null;
+  saveData();
+  render();
+}
+
+/* ---------- REORDENAR DÍAS EN MI SELECCIÓN ---------- */
+let dragDayCard = null;
+let dragDayHandleEl = null;
+let dragDayId = null;
+let dragDayStartY = 0;
+
+function dayDragStart(e, handle){
+  e.preventDefault();
+  const card = handle.closest('.cat-card');
+  if(!card) return;
+  dragDayCard = card;
+  dragDayHandleEl = handle;
+  dragDayId = card.dataset.dayId;
+  dragDayStartY = e.clientY;
+  card.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', dayDragMove);
+  handle.addEventListener('pointerup', dayDragEnd);
+  handle.addEventListener('pointercancel', dayDragEnd);
+}
+
+function dayDragMove(e){
+  if(!dragDayCard) return;
+  const deltaY = e.clientY - dragDayStartY;
+  dragDayCard.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragDayCard.parentElement;
+  const siblings = Array.from(parent.children).filter(el=>el.classList.contains('cat-card') && el.dataset.dayId);
+  const dragIndex = siblings.indexOf(dragDayCard);
+  const draggedRect = dragDayCard.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragDayCard.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragDayCard, target.el);
+    else parent.insertBefore(dragDayCard, target.el.nextSibling);
+
+    const dragIdxData = data.days.findIndex(d=>d.id===dragDayId);
+    const targetIdxData = data.days.findIndex(d=>d.id===target.el.dataset.dayId);
+    if(dragIdxData !== -1 && targetIdxData !== -1){
+      const [moved] = data.days.splice(dragIdxData,1);
+      data.days.splice(targetIdxData,0,moved);
+    }
+
+    dragDayCard.style.transform = 'none';
+    const newNaturalRect = dragDayCard.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragDayStartY = e.clientY - neededTy;
+    dragDayCard.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+
+function dayDragEnd(e){
+  if(!dragDayCard) return;
+  const handle = dragDayHandleEl;
+  handle.removeEventListener('pointermove', dayDragMove);
+  handle.removeEventListener('pointerup', dayDragEnd);
+  handle.removeEventListener('pointercancel', dayDragEnd);
+  dragDayCard.classList.remove('dragging');
+  dragDayCard.style.transform = '';
+  dragDayCard = null;
+  dragDayHandleEl = null;
+  dragDayId = null;
+  saveData();
+  render();
+}
+
+/* ---------- REORDENAR CARPETAS DE DÍAS (arrastrar y soltar) ---------- */
+let dragDayFolderCard = null;
+let dragDayFolderHandleEl = null;
+let dragDayFolderId = null;
+let dragDayFolderStartY = 0;
+
+function dayFolderDragStart(e, handle){
+  e.preventDefault();
+  const card = handle.closest('.cat-card');
+  if(!card) return;
+  dragDayFolderCard = card;
+  dragDayFolderHandleEl = handle;
+  dragDayFolderId = card.dataset.dayFolderId;
+  dragDayFolderStartY = e.clientY;
+  card.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', dayFolderDragMove);
+  handle.addEventListener('pointerup', dayFolderDragEnd);
+  handle.addEventListener('pointercancel', dayFolderDragEnd);
+}
+function dayFolderDragMove(e){
+  if(!dragDayFolderCard) return;
+  const deltaY = e.clientY - dragDayFolderStartY;
+  dragDayFolderCard.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragDayFolderCard.parentElement;
+  const siblings = Array.from(parent.children).filter(el=> el.classList.contains('cat-card') && el.dataset.dayFolderId);
+  const dragIndex = siblings.indexOf(dragDayFolderCard);
+  const draggedRect = dragDayFolderCard.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragDayFolderCard.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragDayFolderCard, target.el);
+    else parent.insertBefore(dragDayFolderCard, target.el.nextSibling);
+
+    const dragIdxData = data.dayFolders.findIndex(f=>f.id===dragDayFolderId);
+    const targetIdxData = data.dayFolders.findIndex(f=>f.id===target.el.dataset.dayFolderId);
+    if(dragIdxData !== -1 && targetIdxData !== -1){
+      const [moved] = data.dayFolders.splice(dragIdxData,1);
+      data.dayFolders.splice(targetIdxData,0,moved);
+    }
+
+    dragDayFolderCard.style.transform = 'none';
+    const newNaturalRect = dragDayFolderCard.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragDayFolderStartY = e.clientY - neededTy;
+    dragDayFolderCard.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+function dayFolderDragEnd(e){
+  if(!dragDayFolderCard) return;
+  const handle = dragDayFolderHandleEl;
+  handle.removeEventListener('pointermove', dayFolderDragMove);
+  handle.removeEventListener('pointerup', dayFolderDragEnd);
+  handle.removeEventListener('pointercancel', dayFolderDragEnd);
+  dragDayFolderCard.classList.remove('dragging');
+  dragDayFolderCard.style.transform = '';
+  dragDayFolderCard = null;
+  dragDayFolderHandleEl = null;
+  dragDayFolderId = null;
+  saveData();
+  render();
+}
+
+/* ---------- REORDENAR SUBGRUPOS DE CATEGORÍA DENTRO DE UN DÍA (MI SELECCIÓN) ---------- */
+let dragSubCard = null;
+let dragSubHandleEl = null;
+let dragSubCatId = null;
+let dragSubStartY = 0;
+
+function subCatDragStart(e, handle){
+  e.preventDefault();
+  const card = handle.closest('.ex-item');
+  if(!card) return;
+  dragSubCard = card;
+  dragSubHandleEl = handle;
+  dragSubCatId = card.dataset.catId;
+  dragSubStartY = e.clientY;
+  card.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', subCatDragMove);
+  handle.addEventListener('pointerup', subCatDragEnd);
+  handle.addEventListener('pointercancel', subCatDragEnd);
+}
+
+function subCatDragMove(e){
+  if(!dragSubCard) return;
+  const deltaY = e.clientY - dragSubStartY;
+  dragSubCard.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragSubCard.parentElement;
+  const siblings = Array.from(parent.children).filter(el=> el.classList.contains('ex-item') && el.dataset.catId && !el.dataset.exId);
+  const dragIndex = siblings.indexOf(dragSubCard);
+  const draggedRect = dragSubCard.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragSubCard.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragSubCard, target.el);
+    else parent.insertBefore(dragSubCard, target.el.nextSibling);
+
+    const dragIdxData = data.categories.findIndex(c=>c.id===dragSubCatId);
+    const targetIdxData = data.categories.findIndex(c=>c.id===target.el.dataset.catId);
+    if(dragIdxData !== -1 && targetIdxData !== -1){
+      const [moved] = data.categories.splice(dragIdxData,1);
+      data.categories.splice(targetIdxData,0,moved);
+    }
+
+    dragSubCard.style.transform = 'none';
+    const newNaturalRect = dragSubCard.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragSubStartY = e.clientY - neededTy;
+    dragSubCard.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+
+function subCatDragEnd(e){
+  if(!dragSubCard) return;
+  const handle = dragSubHandleEl;
+  handle.removeEventListener('pointermove', subCatDragMove);
+  handle.removeEventListener('pointerup', subCatDragEnd);
+  handle.removeEventListener('pointercancel', subCatDragEnd);
+  dragSubCard.classList.remove('dragging');
+  dragSubCard.style.transform = '';
+  dragSubCard = null;
+  dragSubHandleEl = null;
+  dragSubCatId = null;
+  saveData();
+  render();
+}
+
+/* ---------- REORDENAR EJERCICIOS/FOTOS DENTRO DE UNA CATEGORÍA ---------- */
+let dragExItem = null;
+let dragExHandleEl = null;
+let dragExId = null;
+let dragExCatId = null;
+let dragExStartY = 0;
+
+function exDragStart(e, handle){
+  e.preventDefault();
+  const item = handle.closest('.ex-item');
+  if(!item) return;
+  dragExItem = item;
+  dragExHandleEl = handle;
+  dragExId = item.dataset.exId;
+  dragExCatId = item.dataset.catId;
+  dragExStartY = e.clientY;
+  item.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', exDragMove);
+  handle.addEventListener('pointerup', exDragEnd);
+  handle.addEventListener('pointercancel', exDragEnd);
+}
+
+function exDragMove(e){
+  if(!dragExItem) return;
+  const deltaY = e.clientY - dragExStartY;
+  dragExItem.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragExItem.parentElement;
+  const siblings = Array.from(parent.children).filter(el=>el.classList.contains('ex-item'));
+  const dragIndex = siblings.indexOf(dragExItem);
+  const draggedRect = dragExItem.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragExItem.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragExItem, target.el);
+    else parent.insertBefore(dragExItem, target.el.nextSibling);
+
+    const cat = data.categories.find(c=>c.id===dragExCatId);
+    if(cat){
+      const dragIdxData = cat.exercises.findIndex(ex=>ex.id===dragExId);
+      const targetIdxData = cat.exercises.findIndex(ex=>ex.id===target.el.dataset.exId);
+      if(dragIdxData !== -1 && targetIdxData !== -1){
+        const [moved] = cat.exercises.splice(dragIdxData,1);
+        cat.exercises.splice(targetIdxData,0,moved);
+      }
+    }
+
+    dragExItem.style.transform = 'none';
+    const newNaturalRect = dragExItem.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragExStartY = e.clientY - neededTy;
+    dragExItem.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+
+function exDragEnd(e){
+  if(!dragExItem) return;
+  const handle = dragExHandleEl;
+  handle.removeEventListener('pointermove', exDragMove);
+  handle.removeEventListener('pointerup', exDragEnd);
+  handle.removeEventListener('pointercancel', exDragEnd);
+  dragExItem.classList.remove('dragging');
+  dragExItem.style.transform = '';
+  dragExItem = null;
+  dragExHandleEl = null;
+  dragExId = null;
+  dragExCatId = null;
+  saveData();
+  render();
+}
+
+/* ---------- ORDEN LIBRE DE EJERCICIOS DENTRO DE UN DÍA (mezclando categorías) ---------- */
+function getDayOrderedItems(day, items){
+  if(!day || !day.exOrder || day.exOrder.length === 0) return items;
+  const byId = new Map(items.map(it=>[it.ex.id, it]));
+  const ordered = [];
+  day.exOrder.forEach(exId=>{
+    if(byId.has(exId)){ ordered.push(byId.get(exId)); byId.delete(exId); }
+  });
+  // Cualquier ejercicio que aún no esté en el orden guardado (se añadió después) va al final
+  items.forEach(it=>{ if(byId.has(it.ex.id)) ordered.push(it); });
+  return ordered;
+}
+
+let dragDayExItem = null;
+let dragDayExHandleEl = null;
+let dragDayExId = null;
+let dragDayExDayId = null;
+let dragDayExStartY = 0;
+
+function dayExOrderDragStart(e, handle){
+  e.preventDefault();
+  const item = handle.closest('.ex-item');
+  if(!item) return;
+  dragDayExItem = item;
+  dragDayExHandleEl = handle;
+  dragDayExId = item.dataset.exId;
+  dragDayExDayId = item.dataset.dayId;
+  dragDayExStartY = e.clientY;
+
+  // Fijar el orden actual visible como punto de partida, para poder reordenarlo con splice
+  const day = (data.days||[]).find(d=>d.id===dragDayExDayId);
+  if(day){
+    const siblingIds = Array.from(item.parentElement.children)
+      .filter(el=>el.classList.contains('ex-item'))
+      .map(el=>el.dataset.exId);
+    day.exOrder = siblingIds;
+  }
+
+  item.classList.add('dragging');
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  handle.addEventListener('pointermove', dayExOrderDragMove);
+  handle.addEventListener('pointerup', dayExOrderDragEnd);
+  handle.addEventListener('pointercancel', dayExOrderDragEnd);
+}
+function dayExOrderDragMove(e){
+  if(!dragDayExItem) return;
+  const deltaY = e.clientY - dragDayExStartY;
+  dragDayExItem.style.transform = `translateY(${deltaY}px)`;
+
+  const parent = dragDayExItem.parentElement;
+  const siblings = Array.from(parent.children).filter(el=>el.classList.contains('ex-item'));
+  const dragIndex = siblings.indexOf(dragDayExItem);
+  const draggedRect = dragDayExItem.getBoundingClientRect();
+  const draggedMid = draggedRect.top + draggedRect.height/2;
+
+  let target = null;
+  const prev = siblings[dragIndex-1];
+  const next = siblings[dragIndex+1];
+  if(prev){
+    const prevRect = prev.getBoundingClientRect();
+    if(draggedMid < prevRect.top + prevRect.height/2) target = { el: prev, before: true };
+  }
+  if(!target && next){
+    const nextRect = next.getBoundingClientRect();
+    if(draggedMid > nextRect.top + nextRect.height/2) target = { el: next, before: false };
+  }
+  if(target){
+    const beforeRect = dragDayExItem.getBoundingClientRect();
+    if(target.before) parent.insertBefore(dragDayExItem, target.el);
+    else parent.insertBefore(dragDayExItem, target.el.nextSibling);
+
+    const day = (data.days||[]).find(d=>d.id===dragDayExDayId);
+    if(day && day.exOrder){
+      const dragIdxData = day.exOrder.indexOf(dragDayExId);
+      const targetIdxData = day.exOrder.indexOf(target.el.dataset.exId);
+      if(dragIdxData !== -1 && targetIdxData !== -1){
+        const [moved] = day.exOrder.splice(dragIdxData,1);
+        day.exOrder.splice(targetIdxData,0,moved);
+      }
+    }
+
+    dragDayExItem.style.transform = 'none';
+    const newNaturalRect = dragDayExItem.getBoundingClientRect();
+    const neededTy = beforeRect.top - newNaturalRect.top;
+    dragDayExStartY = e.clientY - neededTy;
+    dragDayExItem.style.transform = `translateY(${neededTy}px)`;
+  }
+}
+function dayExOrderDragEnd(e){
+  if(!dragDayExItem) return;
+  const handle = dragDayExHandleEl;
+  handle.removeEventListener('pointermove', dayExOrderDragMove);
+  handle.removeEventListener('pointerup', dayExOrderDragEnd);
+  handle.removeEventListener('pointercancel', dayExOrderDragEnd);
+  dragDayExItem.classList.remove('dragging');
+  dragDayExItem.style.transform = '';
+  dragDayExItem = null;
+  dragDayExHandleEl = null;
+  dragDayExId = null;
+  dragDayExDayId = null;
+  saveData();
+  render();
+}
+
+/* ---------- EJERCICIOS ---------- */
+let currentPhotoData = null;
+function openExModal(catId, exId){
+  editingExId = exId || null;
+  currentPhotoData = null;
+  document.getElementById('exCatId').value = catId;
+  const cat = data.categories.find(c=>c.id===catId);
+  const isPhotoCat = cat && cat.type === 'photos';
+  document.getElementById('exModalTitle').textContent = exId ? (isPhotoCat ? 'Editar foto' : 'Editar ejercicio') : (isPhotoCat ? 'Nueva foto' : 'Nuevo ejercicio');
+  document.getElementById('exName').placeholder = isPhotoCat ? 'Ej: Página 12, Rutina espalda...' : 'Ej: Press banca';
+  document.getElementById('exName').value = '';
+  document.getElementById('exName').style.borderColor = '';
+  document.getElementById('exPhotoInput').value = '';
+  document.getElementById('exPhotoPreview').style.display = 'none';
+
+  // La foto (o varias) se gestiona desde la galería del desplegable una vez creado el ejercicio
+  document.getElementById('exPhotoSection').style.display = exId ? 'none' : 'block';
+  document.getElementById('exPhotoEditNote').style.display = exId ? 'block' : 'none';
+
+  if(exId){
+    const ex = cat.exercises.find(e=>e.id===exId);
+    if(ex) document.getElementById('exName').value = ex.name;
+  }
+  new bootstrap.Modal(document.getElementById('exModal')).show();
+}
+function compressImageFile(file, callback){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const maxDim = 1000;
+      let w = img.width, h = img.height;
+      if(w > maxDim || h > maxDim){
+        if(w >= h){ h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = ()=>{
+      // Si la imagen no se puede procesar como canvas, usar el original
+      callback(e.target.result);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function previewPhoto(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  compressImageFile(file, dataUrl=>{
+    currentPhotoData = dataUrl;
+    document.getElementById('exPhotoImg').src = dataUrl;
+    document.getElementById('exPhotoPreview').style.display = 'block';
+  });
+}
+
+function findExById(exId){
+  for(const cat of data.categories){
+    const ex = cat.exercises.find(e=>e.id===exId);
+    if(ex) return { cat, ex };
+  }
+  return null;
+}
+function captureOpenState(catId, exId){
+  return {
+    cat: document.getElementById('catBody_'+catId)?.classList.contains('open'),
+    all: document.getElementById(`exBody_all_${exId}`)?.classList.contains('open'),
+    selIds: findSelBodyElements(exId).filter(el=>el.classList.contains('open')).map(el=>el.id)
+  };
+}
+function restoreOpenState(catId, exId, state){
+  if(state.cat) document.getElementById('catBody_'+catId)?.classList.add('open');
+  if(state.all) document.getElementById(`exBody_all_${exId}`)?.classList.add('open');
+  (state.selIds||[]).forEach(id=> document.getElementById(id)?.classList.add('open'));
+}
+
+function buildPhotoGalleryHtml(ex, locked, inst){
+  const ids = ex.photoIds || [];
+  const urls = ex.photoUrls || [];
+  const thumbs = ids.map((pid, idx)=>{
+    const url = urls[idx];
+    if(!url) return '';
+    const delBtn = locked ? '' : `<button class="gallery-del" onclick="event.stopPropagation(); removeExPhoto('${ex.id}','${pid}')" title="Quitar foto">✕</button>`;
+    return `<div class="gallery-thumb-wrap">
+      <img src="${url}" onclick="openPhotoLightbox('${ex.id}', ${idx}, '${inst}')">
+      ${delBtn}
+    </div>`;
+  }).join('');
+  const addBtn = locked ? '' : `<button class="gallery-add" onclick="triggerAddExPhoto('${ex.id}')" title="Añadir foto">➕</button>`;
+  return `<div class="gallery-row">${thumbs}${addBtn}</div>`;
+}
+
+function buildNotesButtonHtml(ex){
+  const hasNotes = ex.notes && ex.notes.trim().length > 0;
+  return `<button class="btn btn-ghost w-100 mb-2" onclick="openNotesOverlay('${ex.id}')">${hasNotes ? '📝 Ver / editar notas' : '📝 Añadir notas'}</button>`;
+}
+
+let addPhotoTargetExId = null;
+function triggerAddExPhoto(exId){
+  addPhotoTargetExId = exId;
+  document.getElementById('addPhotoInput').value = '';
+  document.getElementById('addPhotoInput').click();
+}
+async function handleAddExPhoto(event){
+  const file = event.target.files[0];
+  if(!file || !addPhotoTargetExId) return;
+  const exId = addPhotoTargetExId;
+  compressImageFile(file, async (dataUrl)=>{
+    const found = findExById(exId);
+    if(!found) return;
+    const { cat, ex } = found;
+    const newPhotoId = uid();
+    try{
+      await dbPutPhoto(newPhotoId, dataUrl);
+    }catch(e){
+      console.error(e);
+      showToast('⚠️ No se pudo guardar la foto (sin espacio disponible).');
+      return;
+    }
+    if(!ex.photoIds) ex.photoIds = [];
+    if(!ex.photoUrls) ex.photoUrls = [];
+    ex.photoIds.push(newPhotoId);
+    ex.photoUrls.push(dataUrl);
+    const ok = saveData();
+    if(!ok) return;
+    const state = captureOpenState(cat.id, exId);
+    render();
+    restoreOpenState(cat.id, exId, state);
+    showToast('Foto añadida');
+  });
+}
+function removeExPhoto(exId, photoId){
+  const found = findExById(exId);
+  if(!found) return;
+  const { cat, ex } = found;
+  const idx = (ex.photoIds||[]).indexOf(photoId);
+  if(idx === -1) return;
+  ex.photoIds.splice(idx,1);
+  if(ex.photoUrls) ex.photoUrls.splice(idx,1);
+  dbDeletePhoto(photoId).catch(()=>{});
+  saveData();
+  const state = captureOpenState(cat.id, exId);
+  render();
+  restoreOpenState(cat.id, exId, state);
+  showToast('Foto quitada');
+}
+async function saveEx(){
+  const catId = document.getElementById('exCatId').value;
+  const name = document.getElementById('exName').value.trim();
+  const nameInput = document.getElementById('exName');
+  const cat = data.categories.find(c=>c.id===catId);
+  if(!name){
+    nameInput.style.borderColor = 'var(--danger)';
+    nameInput.focus();
+    showToast(cat && cat.type==='photos' ? 'Ponle un título a la foto' : 'Ponle un nombre al ejercicio');
+    return;
+  }
+  nameInput.style.borderColor = '';
+  if(!cat) return;
+
+  const isNew = !editingExId;
+  const exId = editingExId || uid();
+
+  if(currentPhotoData){
+    try{
+      await dbPutPhoto(exId, currentPhotoData);
+    }catch(e){
+      console.error(e);
+      showToast('⚠️ No se pudo guardar la foto (sin espacio disponible).');
+      return;
+    }
+  }
+
+  if(isNew){
+    cat.exercises.push({
+      id: exId, name,
+      photoIds: currentPhotoData ? [exId] : [],
+      photoUrls: currentPhotoData ? [currentPhotoData] : [],
+      history: []
+    });
+  } else {
+    const ex = cat.exercises.find(e=>e.id===exId);
+    if(ex) ex.name = name;
+  }
+
+  const ok = saveData();
+  if(!ok){
+    if(isNew) cat.exercises = cat.exercises.filter(e=>e.id!==exId);
+    return;
+  }
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('exModal')).hide();
+  showToast(cat.type==='photos' ? 'Foto guardada' : 'Ejercicio guardado');
+}
+function askDeleteEx(catId, exId){
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  document.getElementById('confirmText').textContent = `¿Eliminar el ejercicio "${ex.name}" y su historial?`;
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = ()=>{
+    cat.exercises = cat.exercises.filter(e=>e.id!==exId);
+    (ex.photoIds||[]).forEach(pid=> dbDeletePhoto(pid).catch(()=>{}));
+    saveData(); render(); modal.hide(); showToast('Ejercicio eliminado');
+  };
+  modal.show();
+}
+
+/* ---------- COPIAR EJERCICIO A OTRA CATEGORÍA ---------- */
+let copySourceCatId = null;
+let copySourceExId = null;
+function openCopyExModal(catId, exId){
+  copySourceCatId = catId;
+  copySourceExId = exId;
+  renderCopyExOptions();
+  new bootstrap.Modal(document.getElementById('copyExModal')).show();
+}
+function renderCopyExOptions(){
+  const container = document.getElementById('copyExOptions');
+  let html = '';
+  data.categories.forEach(cat=>{
+    if(cat.id === copySourceCatId) return; // no tiene sentido copiar a la misma categoría de origen aquí
+    const folder = cat.folderId ? (data.folders||[]).find(f=>f.id===cat.folderId) : null;
+    const folderTag = folder ? `<span class="cat-tag">${folder.icon || '🏋️'} ${escapeHtml(folder.name)}</span>` : '';
+    html += `<button class="btn btn-ghost w-100 mb-2 text-start" onclick="copyExerciseToCategory('${cat.id}')">${cat.type==='photos' ? '📷 ' : ''}${escapeHtml(cat.name)} ${folderTag}</button>`;
+  });
+  container.innerHTML = html || '<p class="small-muted text-center">No tienes otra categoría donde copiarlo.</p>';
+}
+async function copyExerciseToCategory(targetCatId){
+  const srcCat = data.categories.find(c=>c.id===copySourceCatId);
+  const srcEx = srcCat ? srcCat.exercises.find(e=>e.id===copySourceExId) : null;
+  const targetCat = data.categories.find(c=>c.id===targetCatId);
+  if(!srcEx || !targetCat) return;
+
+  const newPhotoIds = [];
+  const newPhotoUrls = [];
+  const srcIds = srcEx.photoIds || [];
+  const srcUrls = srcEx.photoUrls || [];
+  for(let i=0; i<srcIds.length; i++){
+    const url = srcUrls[i];
+    if(!url) continue;
+    const newPid = uid();
+    try{
+      await dbPutPhoto(newPid, url);
+      newPhotoIds.push(newPid);
+      newPhotoUrls.push(url);
+    }catch(e){ console.error('No se pudo copiar una foto:', e); }
+  }
+
+  const newEx = {
+    id: uid(),
+    name: srcEx.name,
+    photoIds: newPhotoIds,
+    photoUrls: newPhotoUrls,
+    history: [],
+    selected: false,
+    dayIds: [],
+    notes: srcEx.notes || ''
+  };
+  targetCat.exercises.push(newEx);
+  saveData();
+  catOpenState[targetCat.id] = true;
+  render();
+  bootstrap.Modal.getInstance(document.getElementById('copyExModal')).hide();
+  showToast(`Copiado a "${targetCat.name}"`);
+}
+
+/* ---------- SESIONES ---------- */
+function addSession(catId, exId, inst){
+  const w = document.getElementById(`w_${inst}_${exId}`).value;
+  const r = document.getElementById(`r_${inst}_${exId}`).value;
+  const s = document.getElementById(`s_${inst}_${exId}`).value;
+  if(!w || !r || !s){ showToast('Rellena peso, reps y series'); return; }
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  ex.history.push({ id: uid(), date: new Date().toISOString(), weight: w, reps: r, series: s });
+  saveData();
+  // Mantener abierto el desplegable de este ejercicio tras re-render
+  const wasCatOpen = document.getElementById('catBody_'+catId)?.classList.contains('open');
+  render();
+  if(wasCatOpen) document.getElementById('catBody_'+catId)?.classList.add('open');
+  document.getElementById(`exBody_${inst}_${exId}`)?.classList.add('open');
+  showToast('Sesión registrada 💪');
+}
+function deleteSession(catId, exId, sessionId, inst){
+  const cat = data.categories.find(c=>c.id===catId);
+  const ex = cat.exercises.find(e=>e.id===exId);
+  ex.history = ex.history.filter(h=>h.id!==sessionId);
+  saveData();
+  const wasCatOpen = document.getElementById('catBody_'+catId)?.classList.contains('open');
+  render();
+  if(wasCatOpen) document.getElementById('catBody_'+catId)?.classList.add('open');
+  document.getElementById(`exBody_${inst}_${exId}`)?.classList.add('open');
+  if(document.getElementById('guidedWorkoutOverlay').classList.contains('open')) renderGuidedWorkoutStep();
+}
+
+/* ---------- BACKUP ---------- */
+function openBackupModal(){
+  new bootstrap.Modal(document.getElementById('backupModal')).show();
+  refreshBackupSummary();
+}
+async function buildBackupPayload(){
+  const structural = JSON.parse(JSON.stringify(data, (k,v)=> (k==='photo' || k==='photoUrls') ? undefined : v));
+  let photosMap = {};
+  try{
+    const allPhotos = await dbGetAllPhotos();
+    allPhotos.forEach(p=>{ photosMap[p.id] = p.dataUrl; });
+  }catch(e){ console.error(e); }
+  return { ...structural, _photos: photosMap };
+}
+async function refreshBackupSummary(){
+  const el = document.getElementById('backupSummary');
+  try{
+    const backups = await dbGetAllBackups();
+    if(backups.length === 0){
+      el.textContent = 'Aún no tienes copias guardadas';
+    } else {
+      backups.sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+      const last = new Date(backups[0].createdAt).toLocaleString('es-ES');
+      el.textContent = `${backups.length} copia(s) — última: ${last}`;
+    }
+  }catch(e){
+    el.textContent = '';
+  }
+}
+async function saveBackup(){
+  showToast('Guardando copia...');
+  try{
+    const payload = await buildBackupPayload();
+    await dbPutBackup({ id: uid(), createdAt: new Date().toISOString(), payload: JSON.stringify(payload) });
+    refreshBackupSummary();
+    showToast('Copia guardada');
+  }catch(e){
+    console.error(e);
+    showToast('⚠️ No se pudo guardar la copia');
+  }
+}
+async function openBackupsListModal(){
+  new bootstrap.Modal(document.getElementById('backupsListModal')).show();
+  renderBackupsList();
+}
+async function renderBackupsList(){
+  const container = document.getElementById('backupsListBody');
+  container.innerHTML = '<p class="small-muted text-center">Cargando...</p>';
+  try{
+    const backups = await dbGetAllBackups();
+    if(backups.length === 0){
+      container.innerHTML = '<p class="small-muted text-center">No tienes copias guardadas todavía.</p>';
+      return;
+    }
+    backups.sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+    container.innerHTML = backups.map(b=>{
+      const d = new Date(b.createdAt);
+      return `
+        <div class="cat-card" style="padding:12px 14px;">
+          <div style="font-weight:700;">${d.toLocaleDateString('es-ES')}</div>
+          <div class="small-muted" style="margin-bottom:8px;">${d.toLocaleString('es-ES')}</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-accent" style="flex:1;" onclick="restoreBackup('${b.id}')">Restaurar</button>
+            <button class="btn" style="background:var(--danger);color:#fff;flex:0 0 auto;" onclick="askDeleteBackup('${b.id}')">Borrar</button>
+          </div>
+        </div>`;
+    }).join('');
+  }catch(e){
+    container.innerHTML = '<p class="small-muted text-center">Error al cargar las copias.</p>';
+  }
+}
+async function restoreBackup(id){
+  try{
+    const record = await dbGetBackup(id);
+    if(!record){ showToast('Copia no encontrada'); return; }
+    const imported = JSON.parse(record.payload);
+    const photosMap = imported._photos || {};
+    delete imported._photos;
+    data = imported;
+    if(!data.days) data.days = [];
+    if(!data.folders) data.folders = [];
+    if(!data.dayFolders) data.dayFolders = [];
+    if(!data.workoutSummaries) data.workoutSummaries = [];
+    migrateDayIdsIn(data);
+    for(const [pid, dataUrl] of Object.entries(photosMap)){
+      try{ await dbPutPhoto(pid, dataUrl); }catch(err){ console.error(err); }
+    }
+    await migrateAndHydratePhotos();
+    saveData();
+    render();
+    updateLockIcon();
+    bootstrap.Modal.getInstance(document.getElementById('backupsListModal'))?.hide();
+    bootstrap.Modal.getInstance(document.getElementById('backupModal'))?.hide();
+    showToast('Copia restaurada');
+  }catch(e){
+    console.error(e);
+    showToast('⚠️ No se pudo restaurar la copia');
+  }
+}
+function askDeleteBackup(id){
+  document.getElementById('confirmText').textContent = '¿Borrar esta copia guardada? Esta acción no se puede deshacer.';
+  const btn = document.getElementById('confirmBtn');
+  const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+  btn.onclick = async ()=>{
+    try{ await dbDeleteBackup(id); }catch(e){ console.error(e); }
+    modal.hide();
+    renderBackupsList();
+    refreshBackupSummary();
+    showToast('Copia borrada');
+  };
+  modal.show();
+}
+
+function toggleLock(){
+  data.locked = !data.locked;
+  saveData();
+  updateLockIcon();
+  render();
+}
+function updateLockIcon(){
+  const btn = document.getElementById('lockBtn');
+  if(!btn) return;
+  btn.textContent = data.locked ? '🔒' : '🔓';
+  btn.title = data.locked ? 'Desbloquear edición' : 'Bloquear edición';
+}
+
+updateLockIcon();
+render();
+migrateAndHydratePhotos().then(()=> render());
+
+const lbImg = document.getElementById('photoLightboxImg');
+lbImg.addEventListener('touchstart', lbTouchStart, {passive:false});
+lbImg.addEventListener('touchmove', lbTouchMove, {passive:false});
+lbImg.addEventListener('touchend', lbTouchEnd, {passive:true});
+lbImg.addEventListener('wheel', lbWheel, {passive:false});
+
+window.addEventListener('popstate', function(){
+  const photoEl = document.getElementById('photoLightbox');
+  const notesEl = document.getElementById('notesOverlay');
+  if(photoEl && photoEl.classList.contains('open')){
+    photoEl.classList.remove('open');
+    revealCurrentLbExercise();
+  }
+  if(notesEl && notesEl.classList.contains('open')) notesEl.classList.remove('open');
+});
+
+/* ---------- PWA: manifest + Service Worker ---------- */
+(function(){
+  const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%2314161a'/%3E%3Ctext x='50' y='62' font-size='46' text-anchor='middle' fill='%23ff6a3d' font-family='sans-serif' font-weight='bold'%3EM%3C/text%3E%3C/svg%3E";
+  const manifest = {
+    name: 'MiEntrenoPro',
+    short_name: 'MiEntrenoPro',
+    start_url: './',
+    scope: './',
+    display: 'standalone',
+    background_color: '#14161a',
+    theme_color: '#14161a',
+    icons: [
+      { src: iconSvg, sizes: '192x192', type: 'image/svg+xml' },
+      { src: iconSvg, sizes: '512x512', type: 'image/svg+xml' }
+    ]
+  };
+  try{
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    document.getElementById('pwaManifestLink').href = URL.createObjectURL(blob);
+  }catch(e){ console.log('No se pudo generar el manifest:', e); }
+})();
+
+if('serviceWorker' in navigator && (location.protocol === 'https:' || location.protocol === 'http:')){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(err){
+      console.log('Service Worker no disponible en este contexto (normal si abres el archivo directamente sin servidor):', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
